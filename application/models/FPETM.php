@@ -53,6 +53,15 @@ class FPETM extends CI_Model
         return $this->db->update('fpet', $data, $where);
     }
 
+    public function checkParticipant($participant, $idTrain)
+    {
+        $query = $this->db->query(
+            "SELECT * FROM training_access WHERE id_training_header = $idTrain AND npk = $participant"
+        );
+        return $query->num_rows() > 0;
+    }
+
+
     public function publishFpet($id)
     {
         $data = array(

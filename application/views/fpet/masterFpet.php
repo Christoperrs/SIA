@@ -110,9 +110,6 @@ $combinedDataJSON = json_encode($combinedData);
 		</div>
 	</div>
 	<div class="row" id="addFpet" style="display: none;">
-
-
-
 		<div class="col-md-12">
 			<form id="formFpet" method="post" enctype="multipart/form-data" role="form">
 
@@ -239,7 +236,7 @@ $combinedDataJSON = json_encode($combinedData);
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="trainer">Pilih Calon Trainer <span style="color: red;">*</span></label>
-									<select class="form-control input-pill mb-3" id="trainer" name="trainer">
+									<select class="form-control input-pill mb-3" id="trainer" name="trainer" required>
 										<option disabled selected>Pilih</option>
 										<?php foreach ($employee as $e) : ?>
 											<option value="<?php echo $e->NPK; ?>"><?php echo $e->NAMA; ?> (<?php echo $e->DEPARTEMEN; ?>)</option>
@@ -251,14 +248,14 @@ $combinedDataJSON = json_encode($combinedData);
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="trainer">Saran training <span style="color: red;">*</span></label>
-									<input type="text" maxlength="40" class="form-control input-pill mb-3" name="trainSuggest" id="trainSuggest" placeholder="Masukkan Saran Training">
+									<input type="text" maxlength="40" class="form-control input-pill mb-3" name="trainSuggest" id="trainSuggest" placeholder="Masukkan Saran Training" required>
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
 								<label class="my-2">Kondisi Aktual</label>
-								<textarea class="form-control" id="actual" name="actual" rows="2" maxlength="200" placeholder="Masukkan pendapat Anda"></textarea>
+								<textarea class="form-control" id="actual" name="actual" rows="2" maxlength="200" placeholder="Masukkan pendapat Anda" required></textarea>
 							</div>
 							<div class="col-md-6">
 								<div class="form-check">
@@ -268,19 +265,19 @@ $combinedDataJSON = json_encode($combinedData);
 										<span class="form-radio-sign">0%</span>
 									</label>
 									<label class="form-radio-label ml-3">
-										<input class="form-radio-input" type="radio" name="rActual" id="rActual" value="25">
+										<input class="form-radio-input" type="radio" name="rActual" id="rActual" value="25" required>
 										<span class="form-radio-sign">25%</span>
 									</label>
 									<label class="form-radio-label ml-3">
-										<input class="form-radio-input" type="radio" name="rActual" id="rActual" value="50">
+										<input class="form-radio-input" type="radio" name="rActual" id="rActual" value="50" required>
 										<span class="form-radio-sign">50%</span>
 									</label>
 									<label class="form-radio-label ml-3">
-										<input class="form-radio-input" type="radio" name="rActual" id="rActual" value="75">
+										<input class="form-radio-input" type="radio" name="rActual" id="rActual" value="75" required>
 										<span class="form-radio-sign">75%</span>
 									</label>
 									<label class="form-radio-label ml-3">
-										<input class="form-radio-input" type="radio" name="rActual" id="rActual" value="100">
+										<input class="form-radio-input" type="radio" name="rActual" id="rActual" value="100" required>
 										<span class="form-radio-sign">100%</span>
 									</label>
 								</div>
@@ -289,7 +286,7 @@ $combinedDataJSON = json_encode($combinedData);
 						<div class="row">
 							<div class="col-md-6">
 								<label class="my-2">Target / Standard</label>
-								<textarea class="form-control" id="target" name="target" rows="2" maxlength="200" placeholder="Masukkan pendapat Anda"></textarea>
+								<textarea class="form-control" id="target" name="target" rows="2" maxlength="200" placeholder="Masukkan pendapat Anda" required></textarea>
 							</div>
 							<div class="col-md-6">
 								<div class="form-check">
@@ -299,19 +296,19 @@ $combinedDataJSON = json_encode($combinedData);
 										<span class="form-radio-sign">0%</span>
 									</label>
 									<label class="form-radio-label ml-3">
-										<input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="25">
+										<input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="25" required>
 										<span class="form-radio-sign">25%</span>
 									</label>
 									<label class="form-radio-label ml-3">
-										<input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="50">
+										<input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="50" required>
 										<span class="form-radio-sign">50%</span>
 									</label>
 									<label class="form-radio-label ml-3">
-										<input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="75">
+										<input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="75" required>
 										<span class="form-radio-sign">75%</span>
 									</label>
 									<label class="form-radio-label ml-3">
-										<input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="100">
+										<input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="100" required>
 										<span class="form-radio-sign">100%</span>
 									</label>
 								</div>
@@ -351,7 +348,7 @@ $combinedDataJSON = json_encode($combinedData);
 						<div class="row">
 							<div class="col-md-12">
 								<label class="my-2">Keterangan dan Saran</label>
-								<textarea class="form-control" id="notes" name="notes" rows="1" maxlength="200" placeholder="Masukkan pendapat Anda"></textarea>
+								<textarea class="form-control" id="notes" name="notes" rows="1" maxlength="200" placeholder="Masukkan pendapat Anda" required></textarea>
 							</div>
 						</div>
 
@@ -359,7 +356,7 @@ $combinedDataJSON = json_encode($combinedData);
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="approvedHR">Pilih Pihak HRD yang Menyetujui <span style="color: red;">*</span></label>
-									<select class="form-control input-pill mb-3" id="approvedHR" name="approvedHr">
+									<select class="form-control input-pill mb-3" id="approvedHR" name="approvedHr" required>
 										<option disabled selected>Pilih </option>
 										<?php foreach ($employee as $e) : ?>
 											<option value="<?php echo $e->NPK; ?>"><?php echo $e->NAMA; ?> (<?php echo $e->DEPARTEMEN; ?>)</option>
@@ -370,7 +367,7 @@ $combinedDataJSON = json_encode($combinedData);
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="approved">Pilih Pihak yang Menyetujui <span style="color: red;">*</span></label>
-									<select class="form-control input-pill mb-3" id="approved" name="approved">
+									<select class="form-control input-pill mb-3" id="approved" name="approved" required>
 										<option disabled selected>Pilih </option>
 										<?php foreach ($employee as $e) : ?>
 											<option value="<?php echo $e->NPK; ?>"><?php echo $e->NAMA; ?> (<?php echo $e->DEPARTEMEN; ?>)</option>
@@ -498,9 +495,66 @@ $combinedDataJSON = json_encode($combinedData);
 		formElements.submit();
 	}
 
+
 	function update() {
 		var formElements = document.getElementById("formFpet");
 		formElements.submit();
+	}
+
+	function validateForm() {
+		var isValid = true;
+
+		// Resetting previous validation styles
+		resetValidationStyles();
+
+		// Validate text inputs
+		var textInputs = document.querySelectorAll('input[type="text"]');
+		textInputs.forEach(function(input) {
+			if (!input.value.trim()) {
+				input.style.borderColor = "red";
+				isValid = false;
+			}
+		});
+
+		// Validate radio buttons
+		var radioButtons = document.querySelectorAll('input[type="radio"]');
+		var radioChecked = false;
+		radioButtons.forEach(function(radio) {
+			if (radio.checked) {
+				radioChecked = true;
+			}
+		});
+		if (!radioChecked) {
+			var radioContainer = document.querySelector('.form-check');
+			radioContainer.style.color = "red";
+			isValid = false;
+		}
+
+		// Validate dropdowns
+		var dropdowns = document.querySelectorAll('select');
+		dropdowns.forEach(function(dropdown) {
+			if (!dropdown.value) {
+				dropdown.style.borderColor = "red";
+				isValid = false;
+			}
+		});
+
+		return isValid;
+	}
+
+	function resetValidationStyles() {
+		var inputs = document.querySelectorAll('input[type="text"]');
+		inputs.forEach(function(input) {
+			input.style.borderColor = "";
+		});
+
+		var radioContainer = document.querySelector('.form-check');
+		radioContainer.style.color = "";
+
+		var dropdowns = document.querySelectorAll('select');
+		dropdowns.forEach(function(dropdown) {
+			dropdown.style.borderColor = "";
+		});
 	}
 
 	function disableFormElements() {

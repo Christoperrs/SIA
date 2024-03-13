@@ -141,7 +141,7 @@ class QuestionM extends CI_Model
             FROM training_question 
             WHERE package_id IN (SELECT package_id 
                                  FROM training_question_package 
-                                 WHERE status = 1 AND training_id = '2070') "
+                                 WHERE status = 1 AND training_id = $id) "
         );
         return $query->result();
     }

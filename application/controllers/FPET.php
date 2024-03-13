@@ -179,7 +179,7 @@
         {
             if (!$this->isAllowed()) return redirect(site_url());
 
-            $trainer = $this->input->post('npk');
+            $participant = $this->input->post('npk');
 
             $rEstablished = $this->input->post('rEstablished');
             $chooseTrain = $this->input->post('chooseTrain');
@@ -214,10 +214,12 @@
                 $this->FPETM->makeTrain($data);
                 $lastInsertedId = $this->db->insert_id();
                 $data3 = array(
-                    'npk' => $trainer,
-                    'id_training_header' => $trainer,
+                    'npk' => $participant,
+                    'id_training_header' => $chooseTrain,
                 );
-                $this->FPETM->addParticipantTraining2($data3, $chooseTrain);
+                if ($this->FPETM->checkParticipant($participant, $chooseTrain)) {
+                    $this->FPETM->addParticipantTraining2($data3, $chooseTrain);
+                }
             }
             print_r($lastInsertedId);
 
