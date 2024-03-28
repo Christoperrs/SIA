@@ -97,8 +97,36 @@ $combinedDataJSON = json_encode($combinedData);
 		<div class="row" id="trainingContainer">
 			<?php $i = 1;
 			$j = 1;
+			$z = 0;
+			foreach ($training as $t) {
+				if ($t->TRNHDR_STATUS >= 1) {
+					$z++;
+				}
+			}
+			if ($z == 0) { ?>
+				<div class="col card-item fade-in">
+					<div class="row justify-content-center">
+						<div class="col-md-4">
+							<div class="card" style="border-radius: 20px;">
+								<div class="card-header d-flex justify-content-center">
+									<img src="assets/img/dataEmpty1.jpg" style="max-height: 163px">
+								</div>
+								<div class="card-body d-flex justify-content-center">
+									<div class="row">
+										<div class="col">
+											<h4 class="card-title">Tidak ada data training!</h4>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			<?php	}
 			foreach ($training as $t) { ?>
 				<div class="col-sm-3 card-item <?php echo $i <= 4 ? 'fade-in' : 'fade-out' ?>">
+
 					<div class="card" style="border-radius: 20px;">
 						<div class="card-header">
 							<img src="assets/img/picLog.png" style="width: 100%">
@@ -142,34 +170,60 @@ $combinedDataJSON = json_encode($combinedData);
 		<div class="row" id="pagingContainer">
 			<?php $k = 1;
 			$l = 1;
+			$z = 0;
 			foreach ($training as $t) {
-				if ($k == 1) { ?>
-					<div class="col align-items-center justify-content-center d-flex">
-						<ul class="pagination pg-primary">
-							<li class="page-item">
-								<a class="page-link" href="#" aria-label="Previous">
-									<span aria-hidden="true">«</span>
-									<span class="sr-only">Previous</span>
-								</a>
-							</li>
-						<?php }
-					if ($k % 4 == 1) { ?>
-							<script>
-								console.log(<?php echo $k ?>)
-							</script>
-							<li class="page-item" data-page="<?php echo $l ?>"><a class="page-link" href="javascript:void(0)" onclick="showPage(<?php echo $l ?>)"><?php echo $l ?></a></li>
-					<?php $l++;
-					}
-					$k++;
-				} ?>
-					<li class="page-item">
-						<a class="page-link" href="#" aria-label="Next">
-							<span aria-hidden="true">»</span>
-							<span class="sr-only">Next</span>
-						</a>
-					</li>
-						</ul>
-					</div>
+				if ($t->TRNHDR_STATUS >= 1) {
+					$z++;
+				}
+			}
+			if ($z == 0) { ?>
+				<div class="col align-items-center justify-content-center d-flex">
+					<ul class="pagination pg-primary">
+						<li class="page-item">
+							<a class="page-link" href="#" aria-label="Previous">
+								<span aria-hidden="true">«</span>
+								<span class="sr-only">Previous</span>
+							</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" href="#" aria-label="Next">
+								<span aria-hidden="true">»</span>
+								<span class="sr-only">Next</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+
+				<?php	} else {
+				foreach ($training as $t) {
+					if ($k == 1) { ?>
+						<div class="col align-items-center justify-content-center d-flex">
+							<ul class="pagination pg-primary">
+								<li class="page-item">
+									<a class="page-link" href="#" aria-label="Previous">
+										<span aria-hidden="true">«</span>
+										<span class="sr-only">Previous</span>
+									</a>
+								</li>
+							<?php }
+						if ($k % 4 == 1) { ?>
+								<script>
+									console.log(<?php echo $k ?>)
+								</script>
+								<li class="page-item" data-page="<?php echo $l ?>"><a class="page-link" href="javascript:void(0)" onclick="showPage(<?php echo $l ?>)"><?php echo $l ?></a></li>
+						<?php $l++;
+						}
+						$k++;
+					} ?>
+						<li class="page-item">
+							<a class="page-link" href="#" aria-label="Next">
+								<span aria-hidden="true">»</span>
+								<span class="sr-only">Next</span>
+							</a>
+						</li>
+							</ul>
+						</div>
+					<?php } ?>
 		</div>
 	</div>
 	<div id="pdfModal" class="modal">

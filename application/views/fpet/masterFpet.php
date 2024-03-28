@@ -41,7 +41,13 @@ $combinedDataJSON = json_encode($combinedData);
 						</div>
 					</div>
 					<div class="card-body">
-						<table name="table" class="table table-hover table-head-bg-info my-2" style="max-width: 100%;">
+						<div class="form-inline py-2">
+							<label class="col-md-1 p-0">Search:&nbsp;&nbsp;</label>
+							<div class="col-md-11 p-0">
+								<input type="text" class="form-control input-full" onkeyup="searchFPET()" id="searchFPET" name="searchFPET">
+							</div>
+						</div>
+						<table name="tableFPET" class="table table-hover table-head-bg-info my-2" style="max-width: 100%;">
 							<thead>
 								<tr>
 									<th scope="col" class="text-center" style="width: 50px;">No.</th>
@@ -215,11 +221,11 @@ $combinedDataJSON = json_encode($combinedData);
 								<label class="my-2" for="approvedHR">Pilih Pihak HRD yang Menyetujui <span style="color: red;">*</span></label>
 								<select class="form-control input-pill mb-3" id="approvedHR" name="approvedHr" required>
 									<?php if ($defHR) { ?>
-									<option selected value="<?php echo $defHR->NPK; ?>"><?php echo $defHR->NAMA; ?> (<?php echo $defHR->DEPARTEMEN; ?>)</option>
+										<option selected value="<?php echo $defHR->NPK; ?>"><?php echo $defHR->NAMA; ?> (<?php echo $defHR->DEPARTEMEN; ?>)</option>
 									<?php } else { ?>
 										<option disabled selected>Pilih </option>
 										<?php foreach ($employee as $e) : ?>
-										<option value="<?php echo $e->NPK; ?>"><?php echo $e->NAMA; ?> (<?php echo $e->DEPARTEMEN; ?>)</option>
+											<option value="<?php echo $e->NPK; ?>"><?php echo $e->NAMA; ?> (<?php echo $e->DEPARTEMEN; ?>)</option>
 										<?php endforeach; ?>
 									<?php } ?>
 								</select>
@@ -511,9 +517,9 @@ $combinedDataJSON = json_encode($combinedData);
 	function enableFormElements() {
 		var formElements = document.getElementById("formFpet").elements;
 
-			for (var i = 0; i < formElements.length; i++) {
-				formElements[i].disabled = false;
-			}
+		for (var i = 0; i < formElements.length; i++) {
+			formElements[i].disabled = false;
+		}
 	}
 
 
@@ -609,6 +615,36 @@ $combinedDataJSON = json_encode($combinedData);
 				.catch(error => {
 					console.error('Error fetching data showdetail:', error);
 				});
+		}
+	}
+
+	function searchFPET() {
+		var input, filter, table, tr, td, i, txtValue;
+		input = document.getElementById("searchFPET");
+		filter = input.value.toUpperCase();
+		table = document.getElementsByName("tableFPET")[0];
+		tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+		var count = 0;
+		// Loop through all table rows, and hide those who don't match the search query
+		for (i = 0; i < tr.length; i++) {
+			var found = false;
+			for (var j = 1; j < tr[i].getElementsByTagName("td").length; j++) {
+				td = tr[i].getElementsByTagName("td")[j];
+				if (td) {
+					txtValue = td.textContent || td.innerText;
+					if (txtValue.toUpperCase().indexOf(filter) > -1) {
+						found = true;
+						break;
+					}
+				}
+			}
+			if (found) {
+				tr[i].style.display = "";
+				count++;
+				tr[i].getElementsByTagName("td")[0].innerText = count;
+			} else {
+				tr[i].style.display = "none";
+			}
 		}
 	}
 </script>

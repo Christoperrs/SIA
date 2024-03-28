@@ -36,6 +36,13 @@ $combinedDataJSON = json_encode($combinedData);
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="form-inline py-2">
+                            <label class="col-md-1 p-0">Search:&nbsp;&nbsp;</label>
+                            <div class="col-md-11 p-0">
+                                <input type="text" class="form-control input-full" onkeyup="searchApproval()" id="searchApproval" name="searchApproval">
+                            </div>
+                        </div>
+
                         <table name="table" class="table table-hover table-head-bg-info my-2">
                             <thead>
                                 <tr>
@@ -780,7 +787,7 @@ $combinedDataJSON = json_encode($combinedData);
                                 document.getElementById('rejectBtnFpetHr').style.display = 'inline-block';
                                 document.getElementById('approveBtnFpetHr').style.display = 'inline-block';
                                 var rejectBtnFpet = document.getElementById('rejectBtnFpetHr');
-                                rejectBtnFpet.setAttribute('href', '<?= base_url('FPET/rejectHrFpet/') ?>' + id);
+                                // rejectBtnFpet.setAttribute('href', '<?= base_url('FPET/rejectHrFpet/') ?>' + id);
                                 rejectBtnFpet.setAttribute('onclick', "confirmApproval(3, '" + id + "')");
                                 document.getElementById('makeTrain').style.display = 'block';
 
@@ -831,7 +838,7 @@ $combinedDataJSON = json_encode($combinedData);
                     window.location.href = '<?= base_url('FPET/rejectApproveFpet/') ?>' + code + '/' + id;
                 }
             });
-        } else if (code == 0) {
+        } else if (code == 0 || code == 3) {
             Swal.fire({
                 title: 'Konfirmasi Penolakan FPET',
                 text: 'Apakah Anda yakin ingin menolak data ini?',
@@ -850,6 +857,36 @@ $combinedDataJSON = json_encode($combinedData);
                     }
                 }
             });
+        }
+    }
+
+    function searchApproval() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchApproval");
+        filter = input.value.toUpperCase();
+        table = document.getElementsByName("table")[0];
+        tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        var count = 0;
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            var found = false;
+            for (var j = 1; j < tr[i].getElementsByTagName("td").length; j++) {
+                td = tr[i].getElementsByTagName("td")[j];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (found) {
+                tr[i].style.display = "";
+                count++;
+                tr[i].getElementsByTagName("td")[0].innerText = count;
+            } else {
+                tr[i].style.display = "none";
+            }
         }
     }
 </script>

@@ -17,15 +17,21 @@ ob_start();
 						</div>
 					</div>
 					<div class="card-body">
-						<table name="table" class="table table-hover table-head-bg-info my-2">
+						<div class="form-inline py-2">
+							<label class="col-md-1 p-0">Search:&nbsp;&nbsp;</label>
+							<div class="col-md-11 p-0">
+								<input type="text" class="form-control input-full" onkeyup="searchTable()" id="searchInput" name="searchInput">
+							</div>
+						</div>
+						<table name="tableGlobalScore" class="table table-hover table-head-bg-info my-2">
 							<thead>
 								<tr>
 									<th scope="col" class="text-center" style="width: 50px;">No.</th>
-									<th scope="col" class="text-center" style="width: 500px;">Nama Karyawan</th>
-									<th scope="col" class="text-center" style="width: 700px;">Paket Soal</th>
-									<th scope="col" class="text-center" style="width: 500px;">Nama Training</th>
-									<th scope="col" class="text-center" style="width: 500px;">Pre Test</th>
-									<th scope="col" class="text-center" style="width: 500px;">Post Test</th>
+									<th scope="col" class="text-center" style="width: 500px;" onclick="sortScore(1)">Nama Karyawan</th>
+									<th scope="col" class="text-center" style="width: 700px;" onclick="sortScore(2)">Paket Soal</th>
+									<th scope="col" class="text-center" style="width: 500px;" onclick="sortScore(3)">Nama Training</th>
+									<th scope="col" class="text-center" style="width: 500px;" onclick="sortScore(4)">Pre Test</th>
+									<th scope="col" class="text-center" style="width: 500px;" onclick="sortScore(5)">Post Test</th>
 									<!-- <th scope="col" class="text-center">Aksi</th> -->
 								</tr>
 							</thead>
@@ -36,16 +42,14 @@ ob_start();
 									echo '<tr><td colspan="6" class="text-center">Belum ada data</td></tr>';
 								} else {
 									foreach ($score as $t) {
-
 								?>
 										<tr>
 											<td><?php echo $i ?></td>
 											<td><?php echo isset($t['nama']) ? $t['nama'] : ''; ?></td>
 											<td><?php echo isset($t['package_name']) ? $t['package_name'] : ''; ?></td>
 											<td><?php echo isset($t['training_id']) ? $t['training_id'] : ''; ?></td>
-											<td><?php echo isset($t['scorePre']) ? $t['scorePre'] : ''; ?></td>
-											<td><?php echo isset($t['scorePost']) ? $t['scorePost'] : ''; ?></td>
-
+											<td style="text-align: right;"><?php echo isset($t['scorePre']) ? $t['scorePre'] : ''; ?></td>
+											<td style="text-align: right;"><?php echo isset($t['scorePost']) ? $t['scorePost'] : ''; ?></td>
 											<!-- <th class="text-center"><a href="javascript:void(0)" onclick="showDetailFpet(<?php echo isset($t['idFpet']) ? $t['idFpet'] : ''; ?>)" class="btn btn-primary"></i>Detail</a></th> -->
 										</tr>
 								<?php
@@ -123,7 +127,6 @@ ob_start();
 								</div>
 								<div class="col">
 									<label class="my-2">Lembaga Pelaksana</label><br />
-
 									<input type="text" class="form-control input-pill mb-3" name="educator" id="educator" placeholder="Masukkan Lembaga Pelaksana">
 								</div>
 							</div>
@@ -323,6 +326,104 @@ ob_start();
 	</div>
 </div>
 
+<script>
+	function sortScore(column) {
+		var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+		table = document.getElementsByName("tableGlobalScore")[0];
+		switching = true;
+		dir = "asc"; // Set the initial sorting direction to ascending
+
+		while (switching) {
+			switching = false;
+			rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+			for (i = 0; i < rows.length - 1; i++) {
+				shouldSwitch = false;
+				x = rows[i].getElementsByTagName("td")[column].innerText.toLowerCase();
+				y = rows[i + 1].getElementsByTagName("td")[column].innerText.toLowerCase();
+
+				// Check if the two rows should switch places based on the sorting direction and column
+				if (dir === "asc") {
+					shouldSwitch = x.localeCompare(y) > 0;
+				} else if (dir === "desc") {
+					shouldSwitch = x.localeCompare(y) < 0;
+				}
+
+				if (shouldSwitch) {
+					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+					switching = true;
+					switchcount++;
+
+				}
+
+				// Update the No. column to maintain its original order
+				rows[i].getElementsByTagName("td")[0].innerText = i + 1;
+				rows[i + 1].getElementsByTagName("td")[0].innerText = i + 2;
+			}
+
+			// Toggle the sorting direction if no switching occurred in the loop
+			if (switchcount === 0 && dir === "asc") {
+				dir = "desc";
+				switching = true;
+			}
+		}
+
+		// Update the sorting icon in the table header
+		updateSortingIcons(column, dir, "tableGlobalScore");
+	}
+
+	function updateSortingIcons(column, dir, tableName) {
+		var headerRow = document.getElementsByName(tableName)[0].getElementsByTagName("thead")[0].getElementsByTagName("tr")[0];
+		var columns = headerRow.getElementsByTagName("th");
+
+		// Remove existing sorting icons
+		for (var i = 0; i < columns.length; i++) {
+			var iconUp = columns[i].querySelector(".la-chevron-circle-up");
+			if (iconUp) {
+				columns[i].removeChild(iconUp);
+			}
+			var iconDown = columns[i].querySelector(".la-chevron-circle-down");
+			if (iconDown) {
+				columns[i].removeChild(iconDown);
+			}
+		}
+
+		// Add new sorting icon to the clicked column
+		var icon = document.createElement("i");
+		icon.className = dir === "asc" ? "la la-chevron-circle-up" : "la la-chevron-circle-down";
+		columns[column].appendChild(icon);
+	}
+
+	function searchTable() {
+		var input, filter, table, tr, td, i, txtValue;
+		input = document.getElementById("searchInput");
+		filter = input.value.toUpperCase();
+		table = document.getElementsByName("tableGlobalScore")[0];
+		tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+		var count = 0;
+		// Loop through all table rows, and hide those who don't match the search query
+		for (i = 0; i < tr.length; i++) {
+			var found = false;
+			for (var j = 1; j < tr[i].getElementsByTagName("td").length; j++) {
+				td = tr[i].getElementsByTagName("td")[j];
+				if (td) {
+					txtValue = td.textContent || td.innerText;
+					if (txtValue.toUpperCase().indexOf(filter) > -1) {
+						found = true;
+						break;
+					}
+				}
+			}
+			if (found) {
+				tr[i].style.display = "";
+				count++;
+				tr[i].getElementsByTagName("td")[0].innerText = count;
+			} else {
+				tr[i].style.display = "none";
+			}
+		}
+	}
+</script>
 <?php include __DIR__ . '/../script2.php'; ?>
 <?php
 /* Store the content of the buffer for later use */
