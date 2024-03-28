@@ -780,7 +780,7 @@ $combinedDataJSON = json_encode($combinedData);
                                 document.getElementById('rejectBtnFpetHr').style.display = 'inline-block';
                                 document.getElementById('approveBtnFpetHr').style.display = 'inline-block';
                                 var rejectBtnFpet = document.getElementById('rejectBtnFpetHr');
-                                rejectBtnFpet.setAttribute('href', '<?= base_url('FPET/rejectHrFpet/') ?>' + id);
+                                // rejectBtnFpet.setAttribute('href', '<?= base_url('FPET/rejectHrFpet/') ?>' + id);
                                 rejectBtnFpet.setAttribute('onclick', "confirmApproval(3, '" + id + "')");
                                 document.getElementById('makeTrain').style.display = 'block';
 
@@ -831,7 +831,7 @@ $combinedDataJSON = json_encode($combinedData);
                     window.location.href = '<?= base_url('FPET/rejectApproveFpet/') ?>' + code + '/' + id;
                 }
             });
-        } else if (code == 0) {
+        } else if (code == 0 || code == 3) {
             Swal.fire({
                 title: 'Konfirmasi Penolakan FPET',
                 text: 'Apakah Anda yakin ingin menolak data ini?',
