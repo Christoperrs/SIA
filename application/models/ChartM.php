@@ -3,91 +3,99 @@
 class ChartM extends CI_Model
 {
 
-    private $t_header = "training_header";
-    private $t_detail = "training_detail";
-    private $t_access = "training_access";
-    private $t_progress = "training_progress";
+    private $t_header = "KMS_TRNHDR";
+    private $t_detail = "KMS_TRNSUB";
+    private $t_access = "KMS_TRNACC";
+    private $t_progress = "KMS_TRNPRG";
 
     //chart
     public function getCountTraining()
     {
         $query = $this->db->query(
-            "SELECT COUNT(*) as count_value
-                 FROM $this->t_header
-                 WHERE status = 2"
+            "   SELECT  COUNT(*) AS COUNT
+                FROM    KMS_TRNHDR
+                WHERE   TRNHDR_STATUS = 2   "
         );
 
-        // Assuming $this->t_header is the table name, you can modify it accordingly
-        return $query->row()->count_value;
+        return $query->row()->COUNT;
     }
 
     public function getCountSubstance()
     {
         $query = $this->db->query(
-            "SELECT COUNT(*) as count_value
-                    FROM $this->t_detail inner join training_header on $this->t_detail.id_training_header = training_header.id_training_header
-                    WHERE training_header.status = 2 and training_detail.status = 1"
+            "   SELECT  COUNT(*) AS COUNT
+                FROM    KMS_TRNSUB
+                INNER JOIN  KMS_TRNHDR
+                    ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                WHERE   KMS_TRNHDR.TRNHDR_STATUS    = 2
+                AND     KMS_TRNSUB.TRNSUB_STATUS    = 1             "
         );
 
-        // Assuming $this->t_header is the table name, you can modify it accordingly
-        return $query->row()->count_value;
+        return $query->row()->COUNT;
     }
 
     public function getCountDoneLesson()
     {
         $query = $this->db->query(
-
-            "
-                SELECT COUNT(DISTINCT tp.id_training_detail) AS count_value
-                FROM training_progress tp
-                INNER JOIN training_detail td ON td.id_training_detail = tp.id_training_detail
-                INNER JOIN training_header th ON td.id_training_header = th.id_training_header
-                WHERE tp.progress_status >= 1 AND th.status = 2 AND td.status = 1;
+            "   SELECT  COUNT(DISTINCT KMS_TRNPRG.TRNSUB_ID) AS COUNT
+                FROM    KMS_TRNPRG
+                INNER JOIN  KMS_TRNSUB
+                    ON  KMS_TRNSUB.TRNSUB_ID = KMS_TRNPRG.TRNSUB_ID
+                INNER JOIN  KMS_TRNHDR
+                    ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                WHERE   KMS_TRNPRG.TRNPRG_STATUS >= 1
+                AND     KMS_TRNHDR.TRNHDR_STATUS = 2
+                AND     KMS_TRNSUB.TRNSUB_STATUS = 1;
                 
                 "
         );
 
-        return $query->row()->count_value;
+        return $query->row()->COUNT;
     }
 
     public function getCountNotDoneEmp()
     {
         $query = $this->db->query(
-            "SELECT 
-                CASE
-                    WHEN (
-                        SELECT COUNT(*) AS count_value
-                        FROM training_detail
-                        INNER JOIN training_header ON training_detail.id_training_header = training_header.id_training_header
-                        WHERE training_header.status = 2 AND training_detail.status = 1
-                    ) = 0 THEN 0  -- Handling divide by zero by returning 0
-                    ELSE
+            "   SELECT
+                    CASE
+                        WHEN
+                        (   SELECT  COUNT(*) AS count_value
+                            FROM    KMS_TRNSUB
+                            INNER JOIN  KMS_TRNHDR
+                                ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                            WHERE   KMS_TRNHDR.TRNHDR_STATUS = 2
+                            AND     KMS_TRNSUB.TRNSUB_STATUS = 1
+                        ) = 0 THEN 0  -- Handling divide by zero by returning 0
+                        ELSE
                         (
-                            (
-                                SELECT COUNT(*) AS count_value
-                                FROM training_detail
-                                INNER JOIN training_header ON training_detail.id_training_header = training_header.id_training_header
-                                WHERE training_header.status = 2 AND training_detail.status = 1
-                            ) 
-                            - 
-                            (
-                                SELECT COUNT(DISTINCT td.id_training_detail) AS count_value
-                                FROM training_progress tp
-                                INNER JOIN training_detail td ON td.id_training_detail = tp.id_training_detail
-                                INNER JOIN training_header th ON td.id_training_header = th.id_training_header
-                                WHERE progress_status >= 1 AND th.status = 2 AND td.status = 1
-
+                            (   SELECT  COUNT(*) AS count_value
+                                FROM    KMS_TRNSUB
+                                INNER JOIN  KMS_TRNHDR
+                                    ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                WHERE   KMS_TRNHDR.TRNHDR_STATUS = 2
+                                AND     KMS_TRNSUB.TRNSUB_STATUS = 1
+                            ) - 
+                            (   SELECT  COUNT(DISTINCT KMS_TRNSUB.TRNSUB_ID) AS count_value
+                                FROM    KMS_TRNPRG
+                                INNER JOIN  KMS_TRNSUB
+                                    ON  KMS_TRNSUB.TRNSUB_ID = KMS_TRNPRG.TRNSUB_ID
+                                INNER JOIN  KMS_TRNHDR
+                                    ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                WHERE   KMS_TRNPRG.TRNPRG_STATUS >= 1
+                                AND     KMS_TRNHDR.TRNHDR_STATUS = 2
+                                AND     KMS_TRNSUB.TRNSUB_STATUS = 1
                             )
-                        ) * 100 / (
-                            SELECT COUNT(*) AS count_value
-                            FROM training_detail
-                            INNER JOIN training_header ON training_detail.id_training_header = training_header.id_training_header
-                            WHERE training_header.status = 2 AND training_detail.status = 1
+                        ) * 100 /
+                        (   SELECT  COUNT(*) AS count_value
+                            FROM    KMS_TRNSUB
+                            INNER JOIN  KMS_TRNHDR
+                                ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                            WHERE   KMS_TRNHDR.TRNHDR_STATUS = 2
+                            AND     KMS_TRNSUB.TRNSUB_STATUS = 1
                         )
-                END AS result;"
+                    END AS result;"
         );
 
-        // Assuming $this->t_header is the table name, you can modify it accordingly
         return $query->row()->result;
     }
 
@@ -97,30 +105,33 @@ class ChartM extends CI_Model
         $query = $this->db->query(
             "WITH RankedProgress AS (
                     SELECT
-                        tp.[id_training_detail],
-                        tp.[npk],
-                        tp.[progress_status],
-                        tp.[created_date],
-                        SUM(tp.[progress_status]) OVER (PARTITION BY tp.[id_training_detail]) AS total,
-                        th.judul_training_header,
-                        td.judul_training_detail
+                        KMS_TRNPRG.TRNSUB_ID,
+                        KMS_TRNPRG.AWIEMP_NPK,
+                        KMS_TRNPRG.TRNPRG_STATUS,
+                        KMS_TRNPRG.TRNPRG_CREADATE,
+                        SUM(KMS_TRNPRG.TRNPRG_STATUS) OVER (PARTITION BY KMS_TRNPRG.TRNSUB_ID) AS total,
+                        KMS_TRNHDR.TRNHDR_TITLE,
+                        KMS_TRNSUB.TRNSUB_TITLE
                     FROM
-                        [training].[dbo].[training_progress] tp
-                        INNER JOIN training_detail td ON td.id_training_detail = tp.id_training_detail
-                        INNER JOIN training_header th ON th.id_training_header = td.id_training_header
-                        where td.status = 1 and th.status = 2
+                        KMS_TRNPRG
+                        INNER JOIN  KMS_TRNSUB
+                            ON  KMS_TRNSUB.TRNSUB_ID = KMS_TRNPRG.TRNSUB_ID
+                        INNER JOIN  KMS_TRNHDR
+                            ON  KMS_TRNHDR.TRNHDR_ID = KMS_TRNSUB.TRNHDR_ID
+                        WHERE   KMS_TRNSUB.TRNSUB_STATUS = 1
+                        AND     KMS_TRNHDR.TRNHDR_STATUS = 2
                 )
                 SELECT top 10
-                    rp.id_training_detail,
+                    rp.TRNSUB_ID,
                     MAX([total]) AS total,
-                    rp.judul_training_header,
-                    rp.judul_training_detail
+                    rp.TRNHDR_TITLE,
+                    rp.TRNSUB_TITLE
                 FROM
                     RankedProgress rp
                 GROUP BY
-                    rp.id_training_detail,
-                    rp.judul_training_header,
-                    rp.judul_training_detail
+                    rp.TRNSUB_ID,
+                    rp.TRNHDR_TITLE,
+                    rp.TRNSUB_TITLE
                 ORDER BY
                     MAX([total]) DESC;
                 "
@@ -133,50 +144,53 @@ class ChartM extends CI_Model
     {
         $query = $this->db->query(
             "  WITH RankedProgress AS (
-                            SELECT
-                                tp.[id_training_detail],
-                                tp.[npk],
-                                tp.[progress_status],
-                                tp.[created_date],
-                                SUM(tp.[progress_status]) OVER (PARTITION BY tp.[id_training_detail]) AS total,
-                                th.judul_training_header,
-                                th.id_training_header,
-                                td.judul_training_detail
-                            FROM
-                                [training].[dbo].[training_progress] tp
-                                INNER JOIN training_detail td ON td.id_training_detail = tp.id_training_detail
-                                INNER JOIN training_header th ON th.id_training_header = td.id_training_header
-                                where td.status = 1 and th.status = 2
-                        )
-                        , AggregatedTotal AS (
-                            SELECT
-                                rp.id_training_detail,
-                                rp.id_training_header,
-                                MAX([total]) AS total,
-                                rp.judul_training_header,
-                                rp.judul_training_detail,
-                                ROW_NUMBER() OVER (PARTITION BY rp.id_training_header ORDER BY MAX([total]) DESC) AS RowNum
-                            FROM
-                                RankedProgress rp
-                            GROUP BY
-                                rp.id_training_detail,
-                                rp.id_training_header,
-                                rp.judul_training_header,
-                                rp.judul_training_detail
-                        )
-                        SELECT top 10
-                            at.id_training_detail,
-                            at.id_training_header,
-                            at.total AS total,
-                            at.judul_training_header judul_training_header,
-                            at.judul_training_detail,
-                            SUM(at.total) OVER (PARTITION BY at.id_training_header) AS total2
-                        FROM
-                            AggregatedTotal at
-                        WHERE
-                            at.RowNum = 1
-                        ORDER BY
-                            at.id_training_header; 
+                    SELECT
+                        KMS_TRNPRG.TRNSUB_ID,
+                        KMS_TRNPRG.AWIEMP_NPK,
+                        KMS_TRNPRG.TRNPRG_STATUS,
+                        KMS_TRNPRG.TRNPRG_CREADATE,
+                        SUM(KMS_TRNPRG.TRNPRG_STATUS) OVER (PARTITION BY KMS_TRNPRG.TRNSUB_ID) AS total,
+                        KMS_TRNHDR.TRNHDR_TITLE,
+                        KMS_TRNHDR.TRNHDR_ID,
+                        KMS_TRNSUB.TRNSUB_TITLE
+                    FROM
+                        KMS_TRNPRG
+                        INNER JOIN KMS_TRNSUB
+                            ON  KMS_TRNSUB.TRNSUB_ID = KMS_TRNPRG.TRNSUB_ID
+                        INNER JOIN KMS_TRNHDR
+                            ON  KMS_TRNHDR.TRNHDR_ID = KMS_TRNSUB.TRNHDR_ID
+                        WHERE   KMS_TRNSUB.TRNSUB_STATUS = 1
+                        AND     KMS_TRNHDR.TRNHDR_STATUS = 2
+                )
+                , AggregatedTotal AS (
+                    SELECT
+                        rp.TRNSUB_ID,
+                        rp.TRNHDR_ID,
+                        MAX([total]) AS total,
+                        rp.TRNHDR_TITLE,
+                        rp.TRNSUB_TITLE,
+                        ROW_NUMBER() OVER (PARTITION BY rp.TRNHDR_ID ORDER BY MAX([total]) DESC) AS RowNum
+                    FROM
+                        RankedProgress rp
+                    GROUP BY
+                        rp.TRNSUB_ID,
+                        rp.TRNHDR_ID,
+                        rp.TRNHDR_TITLE,
+                        rp.TRNSUB_TITLE
+                )
+                SELECT top 10
+                    at.TRNSUB_ID,
+                    at.TRNHDR_ID,
+                    at.total AS total,
+                    at.TRNHDR_TITLE TRNHDR_TITLE,
+                    at.TRNSUB_TITLE,
+                    SUM(at.total) OVER (PARTITION BY at.TRNHDR_ID) AS total2
+                FROM
+                    AggregatedTotal at
+                WHERE
+                    at.RowNum = 1
+                ORDER BY
+                    at.TRNHDR_ID; 
                 "
         );
 
@@ -187,13 +201,13 @@ class ChartM extends CI_Model
     {
         $status = $this->session->userdata('role') == 'admin' ? '> 0' : '= 2';
         $query = $this->db->query(
-            "  SELECT TOP 10 a.npk, SUM(p.progress_status) AS total_progress
-            FROM training_progress p
-            INNER JOIN training_access a ON p.npk = a.npk 
-            INNER JOIN training_detail d ON d.id_training_detail = p.id_training_detail
-            INNER JOIN training_header h ON d.id_training_header = h.id_training_header
-            WHERE a.access_permission = '1' -- and d.status = '1' and h.status = '2'
-            GROUP BY a.npk
+            "  SELECT TOP 10 KMS_TRNACC.AWIEMP_NPK, SUM(KMS_TRNPRG.TRNPRG_STATUS) AS total_progress
+            FROM KMS_TRNPRG
+            INNER JOIN KMS_TRNACC ON KMS_TRNPRG.AWIEMP_NPK = KMS_TRNACC.AWIEMP_NPK 
+            INNER JOIN KMS_TRNSUB ON KMS_TRNSUB.TRNSUB_ID = KMS_TRNPRG.TRNSUB_ID
+            INNER JOIN KMS_TRNHDR h ON KMS_TRNSUB.TRNHDR_ID = h.TRNHDR_ID
+            WHERE KMS_TRNACC.TRNACC_PERMISSION = '1' -- and KMS_TRNSUB.status = '1' and h.status = '2'
+            GROUP BY KMS_TRNACC.AWIEMP_NPK
             ORDER BY total_progress DESC;
             
             
@@ -208,18 +222,18 @@ class ChartM extends CI_Model
         $status = $this->session->userdata('role') == 'admin' ? '> 0' : '= 2';
         $query = $this->db->query(
             "   
-                SELECT DISTINCT ta2.npk
-                FROM training_access ta2
-                INNER JOIN training_header th2 ON th2.id_training_header = ta2.id_training_header
-                INNER JOIN training_detail td2 ON th2.id_training_header = td2.id_training_header
-                WHERE ta2.access_permission = '1' AND th2.status = '2' AND td2.status = '1'
-                AND ta2.npk NOT IN (
-                    SELECT ta1.npk
-                    FROM training_access ta1
-                    INNER JOIN training_header th1 ON th1.id_training_header = ta1.id_training_header
-                    INNER JOIN training_detail td1 ON th1.id_training_header = td1.id_training_header
-                    INNER JOIN training_progress tp1 ON tp1.id_training_detail = td1.id_training_detail
-                    WHERE ta1.access_permission = '1' AND th1.status = '2' AND td1.status = '1'
+                SELECT DISTINCT KMS_TRNACC.AWIEMP_NPK
+                FROM KMS_TRNACC
+                INNER JOIN KMS_TRNHDR ON KMS_TRNHDR.TRNHDR_ID = KMS_TRNACC.TRNHDR_ID
+                INNER JOIN KMS_TRNSUB ON KMS_TRNHDR.TRNHDR_ID = KMS_TRNSUB.TRNHDR_ID
+                WHERE KMS_TRNACC.TRNACC_PERMISSION = '1' AND KMS_TRNHDR.TRNHDR_STATUS = '2' AND KMS_TRNSUB.TRNSUB_STATUS = '1'
+                AND KMS_TRNACC.AWIEMP_NPK NOT IN (
+                    SELECT ta1.AWIEMP_NPK
+                    FROM KMS_TRNACC ta1
+                    INNER JOIN KMS_TRNHDR th1 ON th1.TRNHDR_ID = ta1.TRNHDR_ID
+                    INNER JOIN KMS_TRNSUB td1 ON th1.TRNHDR_ID = td1.TRNHDR_ID
+                    INNER JOIN KMS_TRNPRG tp1 ON tp1.TRNSUB_ID = td1.TRNSUB_ID
+                    WHERE ta1.TRNACC_PERMISSION = '1' AND th1.TRNHDR_STATUS = '2' AND td1.TRNSUB_STATUS = '1'
                 );
                 
               "
@@ -233,18 +247,18 @@ class ChartM extends CI_Model
         $status = $this->session->userdata('role') == 'admin' ? '> 0' : '= 2';
         $query = $this->db->query(
             "   
-                SELECT DISTINCT ta2.npk
-              FROM training_access ta2
-              INNER JOIN training_header th2 ON th2.id_training_header = ta2.id_training_header
-              INNER JOIN training_detail td2 ON th2.id_training_header = td2.id_training_header
-              WHERE ta2.access_permission = 1 AND th2.status = 2 AND td2.status = 1
-                AND ta2.npk NOT IN (
-                  SELECT DISTINCT ta1.npk
-                  FROM training_access ta1
-                  INNER JOIN training_header th1 ON th1.id_training_header = ta1.id_training_header
-                  INNER JOIN training_detail td1 ON th1.id_training_header = td1.id_training_header
-                  INNER JOIN training_progress tp1 ON tp1.id_training_detail = td1.id_training_detail
-                  WHERE ta1.access_permission = 1 AND th1.status = 2 AND td1.status = 1
+                SELECT DISTINCT KMS_TRNACC.AWIEMP_NPK
+              FROM KMS_TRNACC
+              INNER JOIN KMS_TRNHDR ON KMS_TRNHDR.TRNHDR_ID = KMS_TRNACC.TRNHDR_ID
+              INNER JOIN KMS_TRNSUB ON KMS_TRNHDR.TRNHDR_ID = KMS_TRNSUB.TRNHDR_ID
+              WHERE KMS_TRNACC.TRNACC_PERMISSION = 1 AND KMS_TRNHDR.TRNHDR_STATUS = 2 AND KMS_TRNSUB.TRNSUB_STATUS = 1
+                AND KMS_TRNACC.AWIEMP_NPK NOT IN (
+                  SELECT DISTINCT ta1.AWIEMP_NPK
+                  FROM KMS_TRNACC ta1
+                  INNER JOIN KMS_TRNHDR th1 ON th1.TRNHDR_ID = ta1.TRNHDR_ID
+                  INNER JOIN KMS_TRNSUB td1 ON th1.TRNHDR_ID = td1.TRNHDR_ID
+                  INNER JOIN KMS_TRNPRG tp1 ON tp1.TRNSUB_ID = td1.TRNSUB_ID
+                  WHERE ta1.TRNACC_PERMISSION = 1 AND th1.TRNHDR_STATUS = 2 AND td1.TRNSUB_STATUS = 1
                 );
               "
         );
@@ -256,12 +270,13 @@ class ChartM extends CI_Model
     {
         $status = $this->session->userdata('role') == 'admin' ? '> 0' : '= 2';
         $query = $this->db->query(
-            "   
-                    SELECT DISTINCT ta2.npk, th2.judul_training_header as judul_training_header, td2.judul_training_detail as judul_training_detail
-                    FROM training_access ta2
-                    INNER JOIN training_header th2 ON th2.id_training_header = ta2.id_training_header
-                    INNER JOIN training_detail td2 ON th2.id_training_header = td2.id_training_header
-                    WHERE ta2.access_permission = 1 AND th2.status = 2 AND td2.status = 1
+            "   SELECT DISTINCT KMS_TRNACC.AWIEMP_NPK, KMS_TRNHDR.TRNHDR_TITLE as TRNHDR_TITLE, KMS_TRNSUB.TRNSUB_TITLE as TRNSUB_TITLE
+                FROM KMS_TRNACC
+                INNER JOIN KMS_TRNHDR ON KMS_TRNHDR.TRNHDR_ID = KMS_TRNACC.TRNHDR_ID
+                INNER JOIN KMS_TRNSUB ON KMS_TRNHDR.TRNHDR_ID = KMS_TRNSUB.TRNHDR_ID
+                WHERE   KMS_TRNACC.TRNACC_PERMISSION = 1
+                AND     KMS_TRNHDR.TRNHDR_STATUS = 2
+                AND     KMS_TRNSUB.TRNSUB_STATUS = 1
               "
         );
 
@@ -274,22 +289,22 @@ class ChartM extends CI_Model
             "   
                 SELECT
                 CONCAT(
-                    YEAR(modified_date),
+                    YEAR(TRNPRG_MODIDATE),
                     ' ',
-                    FORMAT(modified_date, 'MMMM', 'id-ID')
+                    FORMAT(TRNPRG_MODIDATE, 'MMMM', 'id-ID')
                 ) AS YearMonth,
                 COUNT(*) AS RecordCount
             FROM
-                [training].[dbo].[training_progress]
+                KMS_TRNPRG
             WHERE
-                modified_date >= DATEADD(MONTH, -5, GETDATE()) 
+                TRNPRG_MODIDATE >= DATEADD(MONTH, -5, GETDATE()) 
             GROUP BY
-                YEAR(modified_date),
-                FORMAT(modified_date, 'MMMM', 'id-ID'),
-                MONTH(modified_date)
+                YEAR(TRNPRG_MODIDATE),
+                FORMAT(TRNPRG_MODIDATE, 'MMMM', 'id-ID'),
+                MONTH(TRNPRG_MODIDATE)
             ORDER BY
-                YEAR(modified_date) ASC,
-                MONTH(modified_date) ASC;
+                YEAR(TRNPRG_MODIDATE) ASC,
+                MONTH(TRNPRG_MODIDATE) ASC;
             
             
               "
@@ -302,13 +317,16 @@ class ChartM extends CI_Model
     {
         $npk = $this->session->userdata('npk');
         $query = $this->db->query(
-            "select count(*) as count_value from training_access ta inner join training_header th 
-                on th.id_training_header = ta.id_training_header 
-                where  access_permission ='1' and th.status = '2' and ta.npk = "  . $npk
+            "   SELECT  COUNT(*) AS COUNT 
+                FROM    KMS_TRNACC
+                INNER JOIN  KMS_TRNHDR
+                    ON  KMS_TRNHDR.TRNHDR_ID = KMS_TRNACC.TRNHDR_ID
+                WHERE   KMS_TRNACC.TRNACC_PERMISSION = '1'
+                AND     KMS_TRNHDR.TRNHDR_STATUS = '2'
+                AND     KMS_TRNACC.AWIEMP_NPK = '$npk'"
         );
 
-        // Assuming $this->t_header is the table name, you can modify it accordingly
-        return $query->row()->count_value;
+        return $query->row()->COUNT;
     }
 
 
@@ -316,71 +334,79 @@ class ChartM extends CI_Model
     {
         $npk = $this->session->userdata('npk');
         $query = $this->db->query(
-            "
-                    SELECT COALESCE(COUNT(*), 0) as count_value
-                    FROM training_detail
-                    INNER JOIN training_header ON training_detail.id_training_header = training_header.id_training_header
-                    INNER JOIN training_access ta ON ta.id_training_header = training_header.id_training_header
-                    WHERE training_header.status = 2 AND ta.access_permission = 1 AND training_detail.status = 1 AND ta.npk = " . $npk
-
+            "   SELECT  COALESCE(COUNT(*), 0) AS COUNT
+                FROM    KMS_TRNSUB
+                INNER JOIN  KMS_TRNHDR
+                    ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                INNER JOIN  KMS_TRNACC
+                    ON  KMS_TRNACC.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                WHERE   KMS_TRNHDR.TRNHDR_STATUS = 2
+                AND     KMS_TRNACC.TRNACC_PERMISSION = 1
+                AND     KMS_TRNSUB.TRNSUB_STATUS = 1
+                AND     KMS_TRNACC.AWIEMP_NPK = '$npk'              "
         );
 
         // Assuming $this->t_header is the table name, you can modify it accordingly
-        return $query->row()->count_value;
+        return $query->row()->COUNT;
     }
 
     public function getCountMyDoneLesson()
     {
         $npk = $this->session->userdata('npk');
         $query = $this->db->query(
-            "  SELECT COUNT(*) AS count_value
-                FROM training_progress tp
-                inner join training_detail td on td.id_training_detail = tp.id_training_detail
-                INNER JOIN training_header th ON td.id_training_header = th.id_training_header
-                WHERE progress_status >= 1 and th.status = 2 and td.status = 1 and npk = " .  $npk
+            "   SELECT  COUNT(*) AS COUNT
+                FROM    KMS_TRNPRG
+                INNER JOIN  KMS_TRNSUB
+                    ON  KMS_TRNSUB.TRNSUB_ID = KMS_TRNPRG.TRNSUB_ID
+                INNER JOIN  KMS_TRNHDR
+                    ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                WHERE   KMS_TRNPRG.TRNPRG_STATUS >= 1
+                AND     KMS_TRNHDR.TRNHDR_STATUS = 2
+                AND     KMS_TRNSUB.TRNSUB_STATUS = 1
+                AND     KMS_TRNPRG.AWIEMP_NPK = '$npk'         "
         );
 
         // Assuming $this->t_header is the table name, you can modify it accordingly
-        return $query->row()->count_value;
+        return $query->row()->COUNT;
     }
 
     public function getCountMyDonePercent()
     {
         $npk = $this->session->userdata('npk');
 
-        $query = $this->db->query("
-            WITH HeaderInfo AS (
-                SELECT th.id_training_header, th.judul_training_header, ta.npk
-                FROM training_header th
-                INNER JOIN training_access ta ON ta.id_training_header = th.id_training_header
-                WHERE th.status = '2' AND ta.npk = '$npk' AND ta.access_permission = '1'
+        $query = $this->db->query(
+            "   WITH HeaderInfo AS (
+                SELECT KMS_TRNHDR.TRNHDR_ID, KMS_TRNHDR.TRNHDR_TITLE, KMS_TRNACC.AWIEMP_NPK
+                FROM KMS_TRNHDR
+                INNER JOIN KMS_TRNACC ON KMS_TRNACC.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                WHERE KMS_TRNHDR.TRNHDR_STATUS = '2' AND KMS_TRNACC.AWIEMP_NPK = '$npk' AND KMS_TRNACC.TRNACC_PERMISSION = '1'
             )
             , Counts AS (
                 SELECT
-                    hi.id_training_header,
-                    hi.npk, 
+                    hi.TRNHDR_ID,
+                    hi.AWIEMP_NPK, 
                     (SELECT COUNT(*)
-                     FROM training_progress p
-                     JOIN training_detail d ON d.id_training_detail = p.id_training_detail
-                     WHERE p.npk = hi.npk  
-                       AND d.id_training_header = hi.id_training_header
-                       AND d.status = 1) AS progress_count,
+                     FROM KMS_TRNPRG
+                     JOIN KMS_TRNSUB ON KMS_TRNSUB.TRNSUB_ID = KMS_TRNPRG.TRNSUB_ID
+                     WHERE KMS_TRNPRG.AWIEMP_NPK = hi.AWIEMP_NPK  
+                       AND KMS_TRNSUB.TRNHDR_ID = hi.TRNHDR_ID
+                       AND KMS_TRNSUB.TRNSUB_STATUS = 1) AS progress_count,
                     (SELECT COUNT(*)
-                    FROM training_detail d
-                    JOIN training_access a ON a.id_training_header = d.id_training_header
-                    inner join training_header he on a.id_training_header = he.id_training_header
-                    WHERE a.npk = hi.npk 
-                      AND d.id_training_header = hi.id_training_header
-                      AND a.access_permission = 1 AND he.status='2' and d.status='1') AS total_count
+                    FROM KMS_TRNSUB
+                    JOIN KMS_TRNACC ON KMS_TRNACC.TRNHDR_ID = KMS_TRNSUB.TRNHDR_ID
+                    inner join KMS_TRNHDR on KMS_TRNACC.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                    WHERE KMS_TRNACC.AWIEMP_NPK = hi.AWIEMP_NPK 
+                      AND KMS_TRNSUB.TRNHDR_ID = hi.TRNHDR_ID
+                      AND KMS_TRNACC.TRNACC_PERMISSION = 1 AND KMS_TRNHDR.TRNHDR_STATUS = '2' and KMS_TRNSUB.TRNSUB_STATUS = '1') AS total_count
                 FROM HeaderInfo hi
             )
             SELECT
-                hi.id_training_header,
-                hi.judul_training_header,
+                hi.TRNHDR_ID,
+                hi.TRNHDR_TITLE,
                 CONCAT(COALESCE(c.progress_count, 0), '/', COALESCE(c.total_count, 0)) AS progress,
                 ISNULL(CAST(COALESCE(c.progress_count, 0) * 100.0 / NULLIF(COALESCE(c.total_count, 0), 0) AS DECIMAL(10, 2)), 0) AS percentage
             FROM HeaderInfo hi
-            LEFT JOIN Counts c ON hi.id_training_header = c.id_training_header;
+            LEFT JOIN Counts c ON hi.TRNHDR_ID = c.TRNHDR_ID;
             ");
 
         // Assuming $this->t_header is the table name, you can modify it accordingly
@@ -391,57 +417,63 @@ class ChartM extends CI_Model
     public function getCountMyNotDone()
     {
         $npk = $this->session->userdata('npk');
-
-        $query = $this->db->query("
-            SELECT
-            CASE
-                WHEN COALESCE(
-                    (
-                        SELECT COALESCE(COUNT(*), 0) as count_value
-                        FROM training_detail
-                        INNER JOIN training_header ON training_detail.id_training_header = training_header.id_training_header
-                        INNER JOIN training_access ta ON ta.id_training_header = training_header.id_training_header
-                        WHERE training_header.status = 2 AND training_detail.status = 1 AND ta.npk = $1 AND training_detail.id_training_header IS NOT NULL
-                    ), 0
-                ) = 0 THEN 0  -- Handling divide by zero by returning 0
-                ELSE
-                    COALESCE(
-                        (
-                            COALESCE(
-                                (
-                                    SELECT COALESCE(COUNT(*), 0) as count_value
-                                    FROM training_detail
-                                    INNER JOIN training_header ON training_detail.id_training_header = training_header.id_training_header
-                                    INNER JOIN training_access ta ON ta.id_training_header = training_header.id_training_header
-                                    WHERE training_header.status = 2 AND training_detail.status = 1 AND ta.npk = $npk AND training_detail.id_training_header IS NOT NULL
-                                ), 0
-                            )
-                            -
-                            COALESCE(
-                                (
-                                    SELECT COALESCE(COUNT(*), 0) AS count_value
-                                    FROM training_progress tp
-                                    INNER JOIN training_detail td ON td.id_training_detail = tp.id_training_detail
-                                    INNER JOIN training_header th ON td.id_training_header = th.id_training_header
-                                    WHERE progress_status >= 1 AND th.status = 2 AND td.status = 1 AND npk = $npk
-                                ), 0
-                            )
-                        ) * 100
-                        /
-                        COALESCE(
-                            (
-                                SELECT COALESCE(COUNT(*), 0) as count_value
-                                FROM training_detail
-                                INNER JOIN training_header ON training_detail.id_training_header = training_header.id_training_header
-                                INNER JOIN training_access ta ON ta.id_training_header = training_header.id_training_header
-                                WHERE training_header.status = 2 AND training_detail.status = 1 AND ta.npk = $npk AND training_detail.id_training_header IS NOT NULL
+        $query = $this->db->query(
+            "   SELECT
+                    CASE
+                        WHEN COALESCE(
+                            (   SELECT  COALESCE(COUNT(*), 0) as count_value
+                                FROM    KMS_TRNSUB
+                                INNER JOIN  KMS_TRNHDR
+                                    ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                INNER JOIN  KMS_TRNACC
+                                    ON  KMS_TRNACC.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                WHERE   KMS_TRNHDR.TRNHDR_STATUS = 2
+                                AND     KMS_TRNSUB.TRNSUB_STATUS = 1
+                                AND     KMS_TRNACC.AWIEMP_NPK = $1
+                                AND     KMS_TRNSUB.TRNHDR_ID IS NOT NULL
                             ), 0
-                        ),0
-                    )
-                END AS result
-        
-            
-            ");
+                        ) = 0 THEN 0  -- Handling divide by zero by returning 0
+                        ELSE
+                            COALESCE(
+                                (   COALESCE(
+                                        (   SELECT  COALESCE(COUNT(*), 0) as count_value
+                                            FROM    KMS_TRNSUB
+                                            INNER JOIN  KMS_TRNHDR
+                                                ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                            INNER JOIN  KMS_TRNACC
+                                                ON  KMS_TRNACC.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                            WHERE   KMS_TRNHDR.TRNHDR_STATUS = 2
+                                            AND     KMS_TRNSUB.TRNSUB_STATUS = 1
+                                            AND     KMS_TRNACC.AWIEMP_NPK = $npk
+                                            AND     KMS_TRNSUB.TRNHDR_ID IS NOT NULL
+                                        ), 0
+                                    ) -
+                                    COALESCE(
+                                        (   SELECT  COALESCE(COUNT(*), 0) AS count_value
+                                            FROM    KMS_TRNPRG
+                                            INNER JOIN  KMS_TRNSUB
+                                                ON  KMS_TRNSUB.TRNSUB_ID = KMS_TRNPRG.TRNSUB_ID
+                                            INNER JOIN  KMS_TRNHDR
+                                                ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                            WHERE TRNPRG_STATUS >= 1 AND KMS_TRNHDR.TRNHDR_STATUS = 2 AND KMS_TRNSUB.TRNSUB_STATUS = 1 AND AWIEMP_NPK = $npk
+                                        ), 0
+                                    )
+                                ) * 100
+                                /
+                                COALESCE(
+                                    (
+                                        SELECT  COALESCE(COUNT(*), 0) as count_value
+                                        FROM    KMS_TRNSUB
+                                        INNER JOIN  KMS_TRNHDR
+                                            ON  KMS_TRNSUB.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                        INNER JOIN  KMS_TRNACC
+                                            ON  KMS_TRNACC.TRNHDR_ID = KMS_TRNHDR.TRNHDR_ID
+                                        WHERE   KMS_TRNHDR.TRNHDR_STATUS = 2 AND KMS_TRNSUB.TRNSUB_STATUS = 1 AND KMS_TRNACC.AWIEMP_NPK = $npk AND KMS_TRNSUB.TRNHDR_ID IS NOT NULL
+                                    ), 0
+                                ),0
+                            )
+                        END AS result"
+        );
 
         // Assuming $this->t_header is the table name, you can modify it accordingly
         return $query->row()->result;
@@ -455,27 +487,27 @@ class ChartM extends CI_Model
             "   
             SELECT
             CONCAT(
-                YEAR(tp.modified_date),
+                YEAR(KMS_TRNPRG.TRNPRG_MODIDATE),
                 ' ',
-                FORMAT(tp.modified_date, 'MMMM', 'id-ID')
+                FORMAT(KMS_TRNPRG.TRNPRG_MODIDATE, 'MMMM', 'id-ID')
             ) AS YearMonth,
             COUNT(*) AS RecordCount
         FROM
-            training_progress tp 
-            inner join training_detail td on  tp.id_training_detail = td.id_training_detail
-            inner join training_header th on th.id_training_header = td.id_training_header
+            KMS_TRNPRG
+            inner join KMS_TRNSUB on  KMS_TRNPRG.TRNSUB_ID = KMS_TRNSUB.TRNSUB_ID
+            inner join KMS_TRNHDR on KMS_TRNHDR.TRNHDR_ID = KMS_TRNSUB.TRNHDR_ID
         WHERE
-            tp.modified_date >= DATEADD(MONTH, -5, GETDATE()) 
-            and npk =  '$npk'
-            and th.status = 2
-            and td.status =1
+            KMS_TRNPRG.TRNPRG_MODIDATE >= DATEADD(MONTH, -5, GETDATE()) 
+            and AWIEMP_NPK =  '$npk'
+            and KMS_TRNHDR.TRNHDR_STATUS = 2
+            and KMS_TRNSUB.TRNSUB_STATUS =1
         GROUP BY
-            YEAR(tp.modified_date),
-            FORMAT(tp.modified_date, 'MMMM', 'id-ID'),
-            MONTH(tp.modified_date)
+            YEAR(KMS_TRNPRG.TRNPRG_MODIDATE),
+            FORMAT(KMS_TRNPRG.TRNPRG_MODIDATE, 'MMMM', 'id-ID'),
+            MONTH(KMS_TRNPRG.TRNPRG_MODIDATE)
         ORDER BY
-            YEAR(tp.modified_date) ASC,
-            MONTH(tp.modified_date) ASC;
+            YEAR(KMS_TRNPRG.TRNPRG_MODIDATE) ASC,
+            MONTH(KMS_TRNPRG.TRNPRG_MODIDATE) ASC;
         
             
               "

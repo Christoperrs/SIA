@@ -22,7 +22,7 @@ class Admin extends CI_Controller
 
         $detailEmployee = [];
         foreach ($admins as $adm) {
-            $detailEmployee[] = $this->OracleDBM->getEmpBy('NPK', $adm->npk);
+            $detailEmployee[] = $this->OracleDBM->getEmpByNPK($adm->AWIEMP_NPK);
         }
         usort($detailEmployee, function($a, $b) {
             return strcmp($a->NAMA, $b->NAMA);
@@ -61,8 +61,15 @@ class Admin extends CI_Controller
         $admins = json_decode($this->input->post('empSelected'));
         if (!empty($admins)) {
             foreach ($admins as $admin) {
-
-                $this->AdminM->saveAdmin((string)$admin);
+                $data = array(
+                    'AWIEMP_NPK'        => $admin,
+                    'ADMAPP_STATUS'     => 1,
+                    'ADMAPP_CREADATE'   => date('Y/m/d H:i:s'),
+                    'ADMAPP_CREABY'     => $this->session->userdata('npk'),
+                    'ADMAPP_MODIDATE'   => date('Y/m/d H:i:s'),
+                    'ADMAPP_MODIBY'     => $this->session->userdata('npk'),
+                );
+                $this->AdminM->saveAdmin($data);
             }
         }
         redirect('Admin');
@@ -71,49 +78,49 @@ class Admin extends CI_Controller
     public function deleteAdmin($npk)
     {
         if (!$this->isAllowed()) return redirect(site_url());
-        $this->AdminM->deleteAdmin($npk);
+        $data = array(
+            'ADMAPP_STATUS'     => 0,
+            'ADMAPP_MODIBY'     => $this->session->userdata('npk'),
+            'ADMAPP_MODIDATE'   => date('Y/m/d H:i:s'),
+        );
+        $where = array(
+            'AWIEMP_NPK'        => $npk
+        );
+        $this->AdminM->deleteAdmin($data, $where);
         redirect(site_url('Admin'));
     }
 
     public function saveTag()
     {
         if (!$this->isAllowed()) return redirect(site_url());
-        $name = $this->input->post('nameTag');
-        $color = $this->input->post('colorTag');
-        $this->AdminM->saveTag($name, $color);
+        $data = array(
+            'TRNLBL_NAME'       => $this->input->post('nameTag'),
+            'TRNLBL_COLOR'      => $this->input->post('colorTag'),
+            'TRNLBL_STATUS'     => 1,
+            'TRNLBL_CREADATE'   => date('Y/m/d H:i:s'),
+            'TRNLBL_CREABY'     => $this->session->userdata('npk'),
+            'TRNLBL_MODIDATE'   => date('Y/m/d H:i:s'),
+            'TRNLBL_MODIBY'     => $this->session->userdata('npk'),
+        );
+        $this->AdminM->saveTag($data);
         redirect(site_url('Admin'));
     }
 
-    public function deleteTag($id)
+    public function deleteLabel($id)
     {
         if (!$this->isAllowed()) return redirect(site_url());
-        $count = $this->AdminM->getCountTag($id);
+        $count = $this->AdminM->getLabelTotal($id);
         print_r($count);
-        if ($count > 0) {
-
-            // echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>';
-            // echo '<script>
-            //         Swal.fire({
-            //             title: "Error!",
-            //             text: "Taggar tidak bisa dihapus karena masih digunakan",
-            //             icon: "error",
-            //             confirmButtonText: "OK",
-            //         });
-            //       </script>';
-        } else {
-            $this->AdminM->deleteTag($id);
-            // echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>';
-            // echo '<script>
-            //     Swal.fire({
-            //         title: "Success!",
-            //         text: "Taggar berhasil dihapus",
-            //         icon: "success",
-            //         confirmButtonText: "OK",
-            //     }).then(function(){
-            //         window.location.href = "' . site_url('Admin') . '";
-            //     });
-            //   </script>';
-
+        if ($count <= 0) {
+            $data = array(
+                'TRNLBL_STATUS'     => 0,
+                'TRNLBL_MODIBY'     => $this->session->userdata('npk'),
+                'TRNLBL_MODIDATE'   => date('Y/m/d H:i:s'),
+            );
+            $where = array(
+                'TRNLBL_ID' => $id
+            );
+            $this->AdminM->deleteLabel($data, $where);
         }
         redirect(site_url('Admin'));
     }

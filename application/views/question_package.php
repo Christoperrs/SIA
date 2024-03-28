@@ -55,13 +55,13 @@ ob_start();
 									<tr>
 
 										<td><?php echo $i; ?></td>
-										<td><?php echo $e->package_uniqueId; ?></td>
-										<td><?php echo $e->package_name; ?></td>
-										<td><?php echo $e->training_id; ?></td>
+										<td><?php echo $e->TRNPCK_UNIQUEID; ?></td>
+										<td><?php echo $e->TRNPCK_NAME; ?></td>
+										<td><?php echo $e->TRNHDR_ID; ?></td>
 										<td>
 											<div class="d-flex justify-content-center">
-												<a href="javascript:void(0)" id="editBtn" onclick="showPForm(<?php echo $e->package_id; ?>)" class="btn btn-warning mr-2"><i class="la la-pencil" style="font-size: 16px;"></i></a>
-												<a href="javascript:void(0)" id="deleteBtn" onclick="deletePackage(<?php echo $e->package_id; ?>)" class="btn btn-danger"><i class="la la-trash" style="font-size: 16px;"></i></a>
+												<a href="javascript:void(0)" id="editBtn" onclick="showPForm(<?php echo $e->TRNPCK_ID; ?>)" class="btn btn-warning mr-2"><i class="la la-pencil" style="font-size: 16px;"></i></a>
+												<a href="javascript:void(0)" id="deleteBtn" onclick="deletePackage(<?php echo $e->TRNPCK_ID; ?>)" class="btn btn-danger"><i class="la la-trash" style="font-size: 16px;"></i></a>
 											</div>
 										</td>
 									</tr>
@@ -115,7 +115,7 @@ ob_start();
 									<select class="form-control form-control" id="chooseTrain" name="chooseTrain" required>
 										<option value="default" selected disabled>-- Pilih Training --</option>
 										<?php foreach ($train as $t) : ?>
-											<option value="<?php echo $t->id_training_header; ?>"><?php echo $t->judul_training_header; ?></option>
+											<option value="<?php echo $t->TRNHDR_ID; ?>"><?php echo $t->TRNHDR_TITLE; ?></option>
 										<?php endforeach; ?>
 									</select>
 								</div>

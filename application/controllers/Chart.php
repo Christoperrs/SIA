@@ -26,7 +26,7 @@ class Chart extends CI_Controller
 		$getHighestEmployee2    = $this->ChartM->getHighestEmployee();
 		$getHighest = [];
 		foreach ($getHighestEmployee2 as $a) {
-			$employee   = $this->OracleDBM->getEmpBy('NPK', $a->npk);
+			$employee   = $this->OracleDBM->getEmpByNPK($a->AWIEMP_NPK);
 			$combine = [
 				'npk'       => $employee->NPK,
 				'nama'      => $employee->NAMA,

@@ -150,8 +150,8 @@ ob_start();
                   <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-3">
                     <div class="me-2" style="padding-right: 10px; padding-left: 10px">
 
-                      <span class="user-level"><b> <?php echo $e->judul_training_detail; ?></b></span>
-                      <small class="text-muted d-block mb-1"><?php echo $e->judul_training_header; ?></small>
+                      <span class="user-level"><b> <?php echo $e->TRNSUB_TITLE; ?></b></span>
+                      <small class="text-muted d-block mb-1"><?php echo $e->TRNHDR_TITLE; ?></small>
                     </div>
 
                     <div class="user-progress d-flex align-items-center gap-2">
@@ -332,7 +332,7 @@ ob_start();
                   </div>
                   <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-3">
                     <div class="me-2" style="padding-right: 10px; padding-left: 10px">
-                      <span class="user-level"><b> <?php echo $e->judul_training_header; ?></b> </span>
+                      <span class="user-level"><b> <?php echo $e->TRNHDR_TITLE; ?></b> </span>
                     </div>
                     <div class="user-progress d-flex align-items-center gap-2">
                       <img src="<?= base_url('assets/img/cc-success.png') ?>" alt="User" class="rounded-circle img-fluid" style="max-width: 25px; max-height: 25px; padding-right: 4px; padding-left: 5px" />
@@ -408,14 +408,14 @@ ob_start();
                   </div>
                   <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-3">
                     <div class="me-2" style="padding-right: 10px; padding-left: 10px">
-                      <small class="text-muted d-block mb-1"><?php echo $e->judul_training_header; ?></small>
-                      <h6 class="mb-0"> <?php echo $e->judul_training_detail; ?></h6>
+                      <small class="text-muted d-block mb-1"><?php echo $e->TRNHDR_TITLE; ?></small>
+                      <h6 class="mb-0"> <?php echo $e->TRNSUB_TITLE; ?></h6>
                     </div>
                     <div class="user-progress d-flex align-items-center gap-2">
                       <img src="<?= base_url('assets/img/cc-success.png') ?>" alt="User" class="rounded-circle img-fluid" style="max-width: 25px; max-height: 25px; padding-right: 4px; padding-left: 5px" />
                     </div>
                     <div class="user-progress d-flex align-items-center gap-1">
-                      <h6 class="mb-0" style="padding-right: 5px;"><?php echo $e->npk; ?></h6>
+                      <h6 class="mb-0" style="padding-right: 5px;"><?php echo $e->AWIEMP_NPK; ?></h6>
                       <span class="text-muted"></span>
                     </div>
                   </div>
@@ -461,7 +461,7 @@ ob_start();
                 </div>
                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-3">
                   <div class="me-2" style="padding-right: 10px; padding-left: 10px">
-                    <h6 class="mb-0"> <?php echo $e->npk; ?></h6>
+                    <h6 class="mb-0"> <?php echo $e->AWIEMP_NPK; ?></h6>
                   </div>
                   <div class="user-progress d-flex align-items-center gap-2">
                     <img src="<?= base_url('assets/img/cc-success.png') ?>" alt="User" class="rounded-circle img-fluid" style="max-width: 25px; max-height: 25px; padding-right: 4px; padding-left: 5px" />
@@ -501,8 +501,8 @@ ob_start();
               </div>
               <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-3">
                 <div class="me-2" style="padding-right: 10px; padding-left: 10px">
-                  <small class="text-muted d-block mb-1"><?php echo $e->judul_training_header; ?></small>
-                  <h6 class="mb-0"> <?php echo $e->judul_training_header; ?></h6>
+                  <small class="text-muted d-block mb-1"><?php echo $e->TRNHDR_TITLE; ?></small>
+                  <h6 class="mb-0"> <?php echo $e->TRNHDR_TITLE; ?></h6>
                 </div>
                 <div class="user-progress d-flex align-items-center gap-2">
                 <img src="<?= base_url('assets/img/cc-success.png') ?>" alt="User" class="rounded-circle img-fluid" style="max-width: 25px; max-height: 25px; padding-right: 4px; padding-left: 5px" />
@@ -552,8 +552,8 @@ ob_start();
                 foreach ($getNotDoneLesson as $e) { ?>
                           <tr>
                             <td><?php echo $i; ?></td>
-                            <td><?php echo $e->judul_training_detail; ?></td>
-                            <td><?php echo $e->judul_training_header; ?></td>
+                            <td><?php echo $e->TRNSUB_TITLE; ?></td>
+                            <td><?php echo $e->TRNHDR_TITLE; ?></td>
                             <td><?php echo $e->npk; ?></td>
                           </tr>
                   <?php $i++;
@@ -612,7 +612,7 @@ ob_start();
   //   type: "bar",
   //   data: {
   //     labels: favoriteSubstanceData.map(function(item) {
-  //       return item.judul_training_detail;
+  //       return item.TRNSUB_TITLE;
   //     }),
   //     datasets: [{
   //       label: "Total",
@@ -917,7 +917,7 @@ ob_start();
 
   // Extracting data for x-axis categories and series
   var categories = data.map(function(item) {
-    return item.judul_training_detail;
+    return item.TRNSUB_TITLE;
   });
 
   var seriesData = data.map(function(item) {
@@ -1098,7 +1098,7 @@ ob_start();
 
   // Extracting data for x-axis categories and series
   var categories3 = data3.map(function(item3) {
-    return item3.judul_training_header;
+    return item3.TRNHDR_TITLE;
   });
 
   var seriesData3 = data3.map(function(item3) {

@@ -45,7 +45,6 @@ class Package extends CI_Controller
         redirect('Question/getPackage');
     }
 
-
     public function retrievePackage($id)
     {
         if (!$this->isAllowed()) return redirect(site_url());

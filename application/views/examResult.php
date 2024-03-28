@@ -59,7 +59,7 @@ function isActive($url)
                                     <div class="notif-center">
                                         <?php foreach ($notif as $e) { ?>
                                             <div class="notification-container" data-id="<?= $e->npk ?>">
-                                                <a href="javascript:void(0)" onclick="removeNotification('<?= $e->npk ?>', <?= $e->id_training_header ?>, $('#totalNotif'));" class="time">
+                                                <a href="javascript:void(0)" onclick="removeNotification('<?= $e->npk ?>', <?= $e->TRNHDR_ID ?>, $('#totalNotif'));" class="time">
                                                     <div class="notif-icon notif-danger"> <i class="la la-trash"></i> </div>
                                                     <div class="notif-content">
                                                         <span class="block">
@@ -72,14 +72,14 @@ function isActive($url)
                                             </div>
                                         <?php } ?>
                                         <?php foreach ($notifMateri as $m) { ?>
-                                            <div class="notification-container" data-id="<?= $m->id_training_detail ?>">
-                                                <a href="javascript:void(0)" onclick="removeNotifMateri(<?= $m->id_training_detail ?>, $('#totalNotif'));" class="time">
+                                            <div class="notification-container" data-id="<?= $m->TRNSUB_ID ?>">
+                                                <a href="javascript:void(0)" onclick="removeNotifMateri(<?= $m->TRNSUB_ID ?>, $('#totalNotif'));" class="time">
                                                     <div class="notif-icon notif-danger"> <i class="la la-trash"></i> </div>
                                                     <div class="notif-content">
                                                         <span class="block">
                                                             <?php echo $m->judul; ?>
                                                         </span>
-                                                        <span class="time">Pengajuan <?php echo $m->judul_training_detail ?> Ditolak</span><br>
+                                                        <span class="time">Pengajuan <?php echo $m->TRNSUB_TITLE ?> Ditolak</span><br>
                                                         <span class="time">Klik untuk Hapus</span>
                                                     </div>
                                                 </a>
@@ -341,9 +341,20 @@ function isActive($url)
     $(document).ready(function() {
         updateDateTime();
         setInterval(updateDateTime, 1000);
+        callLoader();
     });
 
-
+    function callLoader() {
+		var loader = document.getElementById('loaderDiv');
+		setTimeout(function() {
+			loader.classList.add('fade-out');
+			setTimeout(function() {
+				loader.style.display = 'none';
+			}, 500);
+		}, 500);
+		loader.style.display = '';
+		loader.classList.remove('fade-out');
+	}
 
     function backExam() {
         Swal.fire({

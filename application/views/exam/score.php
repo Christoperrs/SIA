@@ -26,7 +26,7 @@ ob_start();
 									<th scope="col" class="text-center" style="width: 500px;">Nama Training</th>
 									<th scope="col" class="text-center" style="width: 500px;">Pre Test</th>
 									<th scope="col" class="text-center" style="width: 500px;">Post Test</th>
-									<th scope="col" class="text-center">Aksi</th>
+									<!-- <th scope="col" class="text-center">Aksi</th> -->
 								</tr>
 							</thead>
 							<tbody id="tBodymainTable">
@@ -39,12 +39,12 @@ ob_start();
 
 								?>
 										<tr>
-											<th><?php echo $i ?></th>
-											<th><?php echo isset($t['nama']) ? $t['nama'] : ''; ?></th>
-											<th><?php echo isset($t['package_name']) ? $t['package_name'] : ''; ?></th>
-											<th><?php echo isset($t['training_id']) ? $t['training_id'] : ''; ?></th>
-											<th><?php echo isset($t['scorePre']) ? $t['scorePre'] : ''; ?></th>
-											<th><?php echo isset($t['scorePost']) ? $t['scorePost'] : ''; ?></th>
+											<td><?php echo $i ?></td>
+											<td><?php echo isset($t['nama']) ? $t['nama'] : ''; ?></td>
+											<td><?php echo isset($t['package_name']) ? $t['package_name'] : ''; ?></td>
+											<td><?php echo isset($t['training_id']) ? $t['training_id'] : ''; ?></td>
+											<td><?php echo isset($t['scorePre']) ? $t['scorePre'] : ''; ?></td>
+											<td><?php echo isset($t['scorePost']) ? $t['scorePost'] : ''; ?></td>
 
 											<!-- <th class="text-center"><a href="javascript:void(0)" onclick="showDetailFpet(<?php echo isset($t['idFpet']) ? $t['idFpet'] : ''; ?>)" class="btn btn-primary"></i>Detail</a></th> -->
 										</tr>
@@ -71,7 +71,7 @@ ob_start();
 					<div class="card-header">
 						<div class="row">
 							<div class="col">
-								<div class="card-title" id="cardTitle">Form Pengajuan dan Evaluaasi Training</div>
+								<div class="card-title" id="cardTitle">Form Pengajuan dan Evaluasi Training</div>
 								<p class="card-category" id="cardCategory">FPET / Tambah FPET</p>
 							</div>
 							<div class="col">
@@ -109,7 +109,7 @@ ob_start();
 									<select class="form-control" id="chooseTrain" name="chooseTrain">
 										<option disabled selected>Pilih </option>
 										<?php foreach ($training as $t) : ?>
-											<option value="<?php echo $t->id_training_header; ?>"><?php echo $t->judul_training_header; ?></option>
+											<option value="<?php echo $t->TRNHDR_ID; ?>"><?php echo $t->TRNHDR_TITLE; ?></option>
 										<?php endforeach; ?>
 									</select>
 								</div>

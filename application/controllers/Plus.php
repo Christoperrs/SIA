@@ -8,6 +8,7 @@ class Plus extends CI_Controller {
 		parent::__construct();
 		$this->load->model("OracleDBM");
         $this->load->model("AdminM");
+        $this->load->model("ChartM");
         $this->load->model("TrainingM");
         $this->load->helper(array('form', 'url'));
 		$this->load->library('session');
@@ -24,23 +25,23 @@ class Plus extends CI_Controller {
 		// $dept   = $this->input->post('code');
 		// if ($code == 'name')
         $filteredData['employees']     = $this->OracleDBM->getEmployeeByKeyword();
-        // else if ($code == 'dept') $filteredData['employees']= $this->OracleDBM->getEmpBy('NM_SIE', $keyword);
+        // else if ($code == 'dept') $filteredData['employees']= $this->OracleDBM->getEmpByNPK('NM_SIE', $keyword);
 		// else $filteredData['employees']                     = $this->OracleDBM->getAllEmp();
         // return $filteredData;
         header('Content-Type: application/json');
         echo json_encode($filteredData);
 	}
     
-	public function getTrainingByNPK() {
+	public function searchTraining() {
 		$isAll	= filter_var($this->input->post('isAll'), FILTER_VALIDATE_BOOLEAN);
 		$key	= $this->input->post('keyword');
         $tag	= $this->input->post('tag');
-		echo json_encode($this->TrainingM->getTrainingByNPK($isAll, $key, $tag));
+		echo json_encode($this->TrainingM->searchTraining($isAll, $key, $tag));
 	}
 
-    public function getTrainingByStatus() {
+    public function filterTraining() {
 		$status	= $this->input->post('status');
-		echo json_encode($this->TrainingM->getTrainingByStatus($status));
+		echo json_encode($this->TrainingM->filterTraining($status));
 	}
 
 	public function getAccessData()
@@ -64,7 +65,7 @@ class Plus extends CI_Controller {
     }
 
     public function getEmp($npk) {
-        echo json_encode($this->OracleDBM->getEmpBy('NPK', $npk));
+        echo json_encode($this->OracleDBM->getEmpByNPK($npk));
     }
 
     public function getAdmins()
@@ -76,4 +77,8 @@ class Plus extends CI_Controller {
 	{
         print_r($this->OracleDBM->getAllEmp());
 	}
+
+    public function getDatas() {
+        print_r($this->OracleDBM->getAllEmp());
+    }
 }

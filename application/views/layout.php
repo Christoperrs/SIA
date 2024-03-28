@@ -50,7 +50,6 @@ function isActive($url)
 							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="la la-bell"></i>
 								<span class="notification" id="totalNotif"><?php echo $totalNotif; ?></span>
-
 							</a>
 							<ul class="dropdown-menu notif-box" aria-labelledby="navbarDropdown">
 								<li>
@@ -60,7 +59,7 @@ function isActive($url)
 									<div class="notif-center">
 										<?php foreach ($notif as $e) { ?>
 											<div class="notification-container" data-id="<?= $e->npk ?>">
-												<a href="javascript:void(0)" onclick="removeNotification('<?= $e->npk ?>', <?= $e->id_training_header ?>, $('#totalNotif'));" class="time">
+												<a href="javascript:void(0)" onclick="removeNotification('<?= $e->npk ?>', <?= $e->TRNHDR_ID ?>, $('#totalNotif'));" class="time">
 													<div class="notif-icon notif-danger"> <i class="la la-trash"></i> </div>
 													<div class="notif-content">
 														<span class="block">
@@ -73,14 +72,14 @@ function isActive($url)
 											</div>
 										<?php } ?>
 										<?php foreach ($notifMateri as $m) { ?>
-											<div class="notification-container" data-id="<?= $m->id_training_detail ?>">
-												<a href="javascript:void(0)" onclick="removeNotifMateri(<?= $m->id_training_detail ?>, $('#totalNotif'));" class="time">
+											<div class="notification-container" data-id="<?= $m->TRNSUB_ID ?>">
+												<a href="javascript:void(0)" onclick="removeNotifMateri(<?= $m->TRNSUB_ID ?>, $('#totalNotif'));" class="time">
 													<div class="notif-icon notif-danger"> <i class="la la-trash"></i> </div>
 													<div class="notif-content">
 														<span class="block">
 															<?php echo $m->judul; ?>
 														</span>
-														<span class="time">Pengajuan <?php echo $m->judul_training_detail ?> Ditolak</span><br>
+														<span class="time">Pengajuan <?php echo $m->TRNSUB_TITLE ?> Ditolak</span><br>
 														<span class="time">Klik untuk Hapus</span>
 													</div>
 												</a>
@@ -94,6 +93,11 @@ function isActive($url)
 									<a class="see-all" href="javascript:void(0);"> <strong>See all notifications</strong> <i class="la la-angle-right"></i> </a>
 								</li> -->
 							</ul>
+						</li>
+						<li class="nav-item dropdown hidden-caret">
+							<a class="nav-link dropdown-toggle" href="javascript:void(0)" onclick="confirmLogout()" data-toggle="tooltip" data-placement="top" title="Logout">
+								<i class="la la-sign-out"></i>
+							</a>
 						</li>
 					</ul>
 				</div>
@@ -136,21 +140,21 @@ function isActive($url)
 								<!-- <span class="badge badge-count">50</span> -->
 							</a>
 						</li>
-						<li class="nav-item <?php echo isActive('Personal') ?>">
-							<a href="<?php echo base_url('Personal') ?>">
-								<i class="la la-pencil-square"></i>
-								<p>Rangkuman Saya</p>
-								<!-- <span class="badge badge-count">5</span> -->
-							</a>
-						</li>
-						<li class="nav-item <?php echo isActive('FPET/index') ?>">
-							<a href="<?php echo base_url('FPET/index') ?>">
-								<i class="la la-user-secret"></i>
-								<p>FPET</p>
-								<!-- <span class="badge badge-count">50</span> -->
-							</a>
-						</li>
 					<?php } ?>
+					<li class="nav-item <?php echo isActive('Personal/Index') ?>">
+						<a href="<?php echo base_url('Personal/Index') ?>">
+							<i class="la la-pencil-square"></i>
+							<p>Rangkuman Saya</p>
+							<!-- <span class="badge badge-count">5</span> -->
+						</a>
+					</li>
+					<li class="nav-item <?php echo isActive('FPET/index') ?>">
+						<a href="<?php echo base_url('FPET/index') ?>">
+							<i class="la la-user-secret"></i>
+							<p>FPET</p>
+							<!-- <span class="badge badge-count">50</span> -->
+						</a>
+					</li>
 					<li class="nav-item <?php echo isActive('FPET/approvalMenu') ?>">
 						<a href="<?php echo base_url('FPET/approvalMenu') ?>">
 							<i class="la la-pencil-square"></i>
@@ -158,22 +162,22 @@ function isActive($url)
 							<!-- <span class="badge badge-count">5</span> -->
 						</a>
 					</li>
-
-					<li class="nav-item <?php echo isActive('Question/getPackage') ?>">
-						<a href="<?php echo base_url('Question/getPackage') ?>">
-							<i class="la la-pencil-square"></i>
-							<p>Paket Soal</p>
-							<!-- <span class="badge badge-count">5</span> -->
-						</a>
-					</li>
-					<!-- <li class="nav-item <?php echo isActive('TrainingOther') ?>">
+					<?php if ($this->session->userdata('role') == 'admin') { ?>
+						<li class="nav-item <?php echo isActive('Question/index') ?>">
+							<a href="<?php echo base_url('Question/index') ?>">
+								<i class="la la-pencil-square"></i>
+								<p>Paket Soal</p>
+								<!-- <span class="badge badge-count">5</span> -->
+							</a>
+						</li>
+						<!-- <li class="nav-item <?php echo isActive('TrainingOther') ?>">
 						<a href="<?php echo base_url('TrainingOther') ?>">
 							<i class="la la-pencil-square"></i>
 							<p>Training</p>
 						</a>
 					</li> -->
 
-					<!-- <li class="nav-item <?php echo isActive('Question/getPreExam') ?>">
+						<!-- <li class="nav-item <?php echo isActive('Question/getPreExam') ?>">
 						<a href="<?php echo base_url('Question/getPreExam') ?>">
 							<i class="la la-pencil-square"></i>
 							<p>Pre/Post Test</p>
@@ -185,23 +189,50 @@ function isActive($url)
 							<p>P Ujian</p>
 						</a>
 					</li> -->
-					<li class="nav-item <?php echo isActive('Question/getGlobalScore') ?>">
-						<a href="<?php echo base_url('Question/getGlobalScore') ?>">
-							<i class="la la-pencil-square"></i>
-							<p>Hasil Tes</p>
+						<li class="nav-item <?php echo isActive('Question/getGlobalScore') ?>">
+							<a href="<?php echo base_url('Question/getGlobalScore') ?>">
+								<i class="la la-pencil-square"></i>
+								<p>Hasil Tes</p>
 
+							</a>
+						</li>
+						<li class="nav-item <?php echo isActive('Personal/Resumes') ?>">
+							<a href="<?php echo base_url('Personal/Resumes') ?>">
+								<i class="la la-gear"></i>
+								<p>Resume</p>
+							</a>
+						</li>
+					<?php } ?>
+					<li class="nav-item <?php echo isActive('Article') ?>">
+						<a href="<?php echo base_url('Article') ?>">
+							<i class="la la-gear"></i>
+							<p>Artikel</p>
 						</a>
 					</li>
+					<!-- <li class="nav-item <?php echo isActive('Forum/viewFRM') ?>">
+							<a href="<?php echo base_url('Forum/viewFRM') ?>">
+								<i class="la la-gear"></i>
+								<p>Forum</p>
+							</a>
+						</li> -->
+					<?php if ($this->session->userdata('role') == 'admin') { ?>
+						<li class="nav-item <?php echo isActive('Setting') ?>">
+							<a href="<?php echo base_url('Setting') ?>">
+								<i class="la la-gear"></i>
+								<p>Pengaturan</p>
+							</a>
+						</li>
+					<?php } ?>
 				</ul>
-				<ul class="nav" style="margin-top: 5px;">
+				<!-- <ul class="nav" style="margin-top: 5px;">
 					<li class="nav-item">
 						<a href="javascript:void(0)" onclick="confirmLogout()">
 							<i class="la la-sign-out"></i>
 							<p>Logout</p>
-							<!-- <span class="badge badge-count">5</span> -->
+							<span class="badge badge-count">5</span>
 						</a>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</div>
 		<div class="main-panel">
@@ -239,6 +270,7 @@ function isActive($url)
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js') ?>"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js') ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
 <script>
 	function confirmLogout() {
 		Swal.fire({
@@ -294,7 +326,7 @@ function isActive($url)
 			}
 		}).then((result) => {
 			if (result.isConfirmed && total < 1) {
-				window.location.href = '<?= base_url('Admin/deleteTag/') ?>' + id;
+				window.location.href = '<?= base_url('Admin/deleteLabel/') ?>' + id;
 			}
 		});
 	}
