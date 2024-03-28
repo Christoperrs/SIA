@@ -126,7 +126,7 @@ ob_start();
         <?php foreach ($getCountMyDonePercent as $e) { ?>
           <div class="progress-card">
             <div class="d-flex justify-content-between mb-1">
-              <span class="text-muted"><?php echo $e->judul_training_header; ?></span>
+              <span class="text-muted"><?php echo $e->TRNHDR_TITLE; ?></span>
               <span class="text-muted fw-bold">
                 <?php echo intval($e->percentage); ?>%</span>
             </div>

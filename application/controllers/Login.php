@@ -22,7 +22,7 @@ class Login extends CI_Controller
 	{
 		$post = $this->input->post();
 		if (isset($post['npk']) && isset($post['password'])) {
-			$data = $this->OracleDBM->getEmpBy('NPK', $post['npk']);
+			$data = $this->OracleDBM->getEmpByNPK($post['npk']);
 			if ($data != null) {
 				$npk = $data->NPK;
 				$nama = $data->NAMA;

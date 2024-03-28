@@ -5,11 +5,11 @@ ob_start();
 $combinedData = [];
 $uniqueIds = [];
 foreach ($substance as $s) {
-    $title = $s->judul_training_detail;
-    $id_header = $s->id_training_header;
-    $id_detail = $s->id_training_detail;
-    $path = $s->path_file_training_detail;
-    $status = $s->status;
+    $title = $s->TRNSUB_TITLE;
+    $id_header = $s->TRNHDR_ID;
+    $id_detail = $s->TRNSUB_ID;
+    $path = $s->TRNSUB_PATH;
+    $status = $s->TRNSUB_STATUS;
     $combinedData[] = array(
         'title' => $title, 'id_header' => $id_header,
         'id_detail' => $id_detail, 'path' => $path,
@@ -40,7 +40,7 @@ $combinedDataJSON = json_encode($combinedData);
                             <thead>
                                 <tr>
                                     <th scope="col" class="text-center" style="width: 50px;">No.</th>
-                                    <th scope="col" class="text-center" style="width: 500px;">Trainer</th>
+                                    <th scope="col" class="text-center" style="width: 500px;">Peserta Pelatihan</th>
                                     <th scope="col" class="text-center" style="width: 700px;">Target</th>
                                     <th scope="col" class="text-center" style="width: 500px;">Approval Atasan</th>
                                     <th scope="col" class="text-center" style="width: 500px;">Approval HR</th>
@@ -123,15 +123,15 @@ $combinedDataJSON = json_encode($combinedData);
                     <div class="card-header">
                         <div class="row">
                             <div class="col">
-                                <div class="card-title" id="cardTitle">Form Pengajuan dan Evaluaasi Training</div>
+                                <div class="card-title" id="cardTitle">Form Pengajuan dan Evaluasi Training</div>
                                 <p class="card-category" id="cardCategory">FPET / Tambah FPET</p>
                             </div>
                             <div class="col">
                                 <div class="d-flex justify-content-end" id="btnDetailFpet" style="display: none;">
-                                    <a id="approveBtnFpet" class="btn btn-info" style="margin-right: 9px; display: none;"></i> Approve</a>
-                                    <a id="rejectBtnFpet" class="btn btn-danger " style="margin-right: 9px; display: none;"></i> Reject</a>
+                                    <a id="approveBtnFpet" class="btn btn-info" href="javascript:void(0)" style="margin-right: 9px; display: none;"></i> Approve</a>
+                                    <a id="rejectBtnFpet" class="btn btn-danger " href="javascript:void(0)" style="margin-right: 9px; display: none;"></i> Reject</a>
                                     <a id="approveBtnFpetHr" href="javascript:void(0)" onclick="showFormTrainModal()" class="btn btn-info" style="margin-right: 9px; display: none;"></i> Approve HR</a>
-                                    <a id="rejectBtnFpetHr" class="btn btn-danger " style="margin-right: 9px; display: none;"></i> Reject HR</a>
+                                    <a id="rejectBtnFpetHr" class="btn btn-danger " href="javascript:void(0)" style="margin-right: 9px; display: none;"></i> Reject HR</a>
                                 </div>
                             </div>
                         </div>
@@ -140,8 +140,8 @@ $combinedDataJSON = json_encode($combinedData);
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="trainer">Pilih Calon Trainer <span style="color: red;">*</span></label>
-                                    <select class="form-control input-pill mb-3" id="trainer" name="trainer">
+                                    <label>Pilih Calon Partisipan <span style="color: red;">*</span></label>
+                                    <select class="form-control input-pill mb-3" id="partisipanTraining" name="partisipanTraining">
                                         <option disabled selected>Pilih</option>
                                         <?php foreach ($employee as $e) : ?>
                                             <option value="<?php echo $e->NPK; ?>"><?php echo $e->NAMA; ?> (<?php echo $e->DEPARTEMEN; ?>)</option>
@@ -151,7 +151,7 @@ $combinedDataJSON = json_encode($combinedData);
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="trainer">Saran training <span style="color: red;">*</span></label>
+                                    <label>Saran training <span style="color: red;">*</span></label>
                                     <input type="text" maxlength="40" class="form-control input-pill mb-3" name="trainSuggest" id="trainSuggest" placeholder="Masukkan Saran Training">
                                 </div>
                             </div>
@@ -194,7 +194,7 @@ $combinedDataJSON = json_encode($combinedData);
                             </div>
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <label for="chooseTrain">Kemampuan Yang diinginkan<span style="color: red;">*</span></label> <br />
+                                    <label>Kemampuan Yang diinginkan<span style="color: red;">*</span></label> <br />
                                     <label class="form-radio-label">
                                         <input class="form-radio-input" type="radio" name="rTarget" id="rTarget" value="0" required>
                                         <span class="form-radio-sign">0%</span>
@@ -304,7 +304,7 @@ $combinedDataJSON = json_encode($combinedData);
                                     <select class="form-control" id="chooseTrain" name="chooseTrain">
                                         <option disabled selected>Pilih </option>
                                         <?php foreach ($training as $t) : ?>
-                                            <option value="<?php echo $t->id_training_header; ?>"><?php echo $t->judul_training_header; ?></option>
+                                            <option value="<?php echo $t->TRNHDR_ID; ?>"><?php echo $t->TRNHDR_TITLE; ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -378,7 +378,7 @@ $combinedDataJSON = json_encode($combinedData);
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="trainer">Saran training <span style="color: red;">*</span></label>
+                                            <label>Saran training <span style="color: red;">*</span></label>
                                             <input type="text" maxlength="40" class="form-control input-pill mb-3" name="trainSuggestModal" id="trainSuggestModal" placeholder="Masukkan Saran Training" readonly>
                                         </div>
                                     </div>
@@ -393,7 +393,7 @@ $combinedDataJSON = json_encode($combinedData);
                                             <select class="form-control" id="chooseTrain" name="chooseTrain">
                                                 <option disabled selected>Pilih </option>
                                                 <?php foreach ($training as $t) : ?>
-                                                    <option value="<?php echo $t->id_training_header; ?>"><?php echo $t->judul_training_header; ?></option>
+                                                    <option value="<?php echo $t->TRNHDR_ID; ?>"><?php echo $t->TRNHDR_TITLE; ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -429,15 +429,15 @@ $combinedDataJSON = json_encode($combinedData);
                                                 <label>Pilih Jenis Traininsg <span style="color: red;">*</span></label><br />
                                                 <label class="form-radio-label">
                                                     <input class="form-radio-input" type="radio" name="categoryTrain" id="categoryTrain" value="Inhouse">
-                                                    <span class="form-radio-sign">In-House</span>
+                                                    <span class="form-radio-sign" name="categoryTrainText">In-House</span>
                                                 </label>
                                                 <label class="form-radio-label ml-3">
                                                     <input class="form-radio-input" type="radio" name="categoryTrain" id="categoryTrain" value="Outhouse">
-                                                    <span class="form-radio-sign">Out-House</span>
+                                                    <span class="form-radio-sign" name="categoryTrainText">Out-House</span>
                                                 </label>
                                                 <label class="form-radio-label ml-3">
                                                     <input class="form-radio-input" type="radio" name="categoryTrain" id="categoryTrain" value="Elearning">
-                                                    <span class="form-radio-sign">Elearning</span>
+                                                    <span class="form-radio-sign" name="categoryTrainText">Elearning</span>
                                                 </label>
 
                                             </div>
@@ -448,7 +448,7 @@ $combinedDataJSON = json_encode($combinedData);
                             </div>
 
                             <div class="modal-footer">
-                                <button type="submit" onclick="submitTrain()" class="btn btn-primary">Submit</button>
+                                <button type="button" onclick="submitTrain()" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
                     </div>
@@ -510,7 +510,7 @@ $combinedDataJSON = json_encode($combinedData);
     function clearFormFpet() {
         // Reset input values
         document.getElementById('idFpet').value = '';
-        document.getElementById('trainer').value = '';
+        document.getElementById('partisipanTraining').value = '';
         document.getElementById('actual').value = '';
         document.getElementById('target').value = '';
         document.getElementById('notes').value = '';
@@ -530,10 +530,10 @@ $combinedDataJSON = json_encode($combinedData);
         });
 
         // Reset radio buttons for rEval
-        var rEvalRadios = document.getElementsByName('rEval');
-        rEvalRadios.forEach(radio => {
-            radio.checked = false;
-        });
+        // var rEvalRadios = document.getElementsByName('rEval');
+        // rEvalRadios.forEach(radio => {
+        //     radio.checked = false;
+        // });
 
         // Reset select elements
         document.getElementById('chooseTrain').selectedIndex = 0;
@@ -545,14 +545,109 @@ $combinedDataJSON = json_encode($combinedData);
         document.getElementById('rEstablishedN').checked = false;
     }
 
-    function save() {
-        var formElements = document.getElementById("formFpet");
-        formElements.submit();
-    }
 
     function submitTrain() {
         var formElements = document.getElementById("formMakeTrain");
-        formElements.submit();
+        var idTrain = document.getElementById("chooseTrain").value;
+        var npk = document.getElementById("npk").value;
+        var rEstablishedValue = document.querySelector('input[name="rEstablished"]:checked').value;
+        if (rEstablishedValue == 1) {
+            var dropdowns = ["chooseTrain"];
+            var isValid = true;
+            dropdowns.forEach(dropdownId => {
+                var dropdownValue = document.getElementById(dropdownId).value;
+                if (!dropdownValue || dropdownValue === "Pilih") {
+                    document.getElementById(dropdownId).style.border = "1px solid red";
+                    isValid = false;
+                } else {
+                    document.getElementById(dropdownId).style.border = "1px solid #ced4da";
+                }
+            });
+
+            if (isValid) {
+
+                fetch('<?= base_url('FPET/checkParticipant/') ?>?npk=' + npk + '&id=' + idTrain)
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(dataExists => {
+                        console.log('Data exists:', dataExists);
+                        // Check if participant exists
+                        if (dataExists) {
+                            // Participant exists
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Data sudah Ada !',
+                                text: 'Data sudah ada dalam database.',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Konfirmasi Persetujuan Training',
+                                text: 'Apakah Anda yakin ingin data diisi dengan benar?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Ya',
+                                cancelButtonText: 'Tidak'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    formElements.submit();
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+
+            }
+        } else {
+            var requiredFields = ["title", "schedule", "educator", "cost"];
+            var isValid = true;
+
+            requiredFields.forEach(fieldId => {
+                var fieldValue = document.getElementById(fieldId).value.trim();
+
+                if (!fieldValue) {
+                    document.getElementById(fieldId).style.border = "1px solid red";
+                    isValid = false;
+                } else {
+                    document.getElementById(fieldId).style.border = "1px solid #ced4da";
+                }
+            });
+
+            var actualRadioChecked = document.querySelector('input[name="categoryTrain"]:checked');
+            if (!actualRadioChecked) {
+                document.querySelectorAll('span[name="categoryTrainText"]').forEach(function(span) {
+                    span.style.color = "red";
+                });
+                isValid = false;
+            } else {
+                document.querySelectorAll('span[name="categoryTrainText"] .text-content').forEach(function(span) {
+                    span.style.color = "";
+                });
+            }
+            if (isValid) {
+                Swal.fire({
+                    title: 'Konfirmasi Persetujuan Training',
+                    text: 'Apakah Anda yakin ingin data diisi dengan benar?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formElements.submit();
+                    }
+                });
+            }
+
+        }
     }
 
     function disableFormElements() {
@@ -602,82 +697,6 @@ $combinedDataJSON = json_encode($combinedData);
         document.getElementById("addFpet").style.display = 'block';
     }
 
-
-    // function addRowFtpe() {
-    // 	var tableBody = document.getElementById('tBodyFtpe');
-    // 	var idNow = getMaxRow(tableBody, 'rowFtpe');
-
-    // 	var contentRow = document.createElement('tr');
-    // 	contentRow.id = 'rowFtpe' + idNow;
-
-    // 	createNumberCell(idNow, contentRow);
-    // 	createInputCell('gap' + idNow, 'text', 'Kondisi Aktual...', contentRow, 1);
-    // 	createInputCell('target' + idNow, 'text', 'Target...', contentRow, 1);
-    // 	createInputCell('result' + idNow, 'text', 'Evaluasi Hasil...', contentRow, 1);
-    // 	createDeleteActionCell('deleteRowFtpe' + idNow, contentRow);
-
-    // 	rowFtpe++;
-    // 	isDataExistTable(7, tableBody, rowFtpe);
-    // 	tableBody.appendChild(contentRow);
-
-    // 	document.getElementById('deleteRowFtpe' + idNow).onclick = function() {
-    // 		removeRowFtpe(idNow, 'rowFtpe', tableBody);
-    // 	};
-    // }
-
-    // function removeRowFtpe(id, rowName, tableBody) {
-    // 	var column = tableBody.closest('table').querySelector('thead').querySelectorAll('th').length;
-    // 	if (column == 4) column = 6;
-    // 	console.log(rowName + id);
-    // 	document.getElementById(rowName + id).remove();
-    // 	window[rowName] -= 1;
-    // 	isDataExistTable(column, tableBody, window[rowName]);
-    // }
-
-    // function isDataExistTable(colspan, tableBody, row) {
-    // 	if (row == 0) {
-    // 		if (document.getElementById('emptyData' + tableBody.id) != null) {
-    // 			document.getElementById('emptyData' + tableBody.id).remove();
-    // 		}
-    // 		var departmentRow = document.createElement('tr');
-    // 		if (colspan == 1) colspan = 6;
-
-    // 		var emptyDataCell = document.createElement('td');
-    // 		emptyDataCell.colSpan = colspan;
-    // 		emptyDataCell.id = 'emptyData' + tableBody.id;
-    // 		emptyDataCell.textContent = 'Belum ada data.';
-    // 		emptyDataCell.classList.add('text-center');
-    // 		departmentRow.appendChild(emptyDataCell);
-
-    // 		tableBody.appendChild(departmentRow);
-    // 	} else if (document.getElementById('emptyData' + tableBody.id) != null) {
-    // 		document.getElementById('emptyData' + tableBody.id).remove();
-    // 	}
-    // }
-
-    // function createNumberCell(text, tr) {
-    // 	var cell = document.createElement('td');
-    // 	cell.textContent = text + '.';
-    // 	cell.classList.add('text-center');
-    // 	tr.appendChild(cell);
-    // }
-
-    // function createDeleteActionCell(idname, tr) {
-    // 	var icon = document.createElement('i');
-    // 	icon.classList.add('la', 'la-trash-o');
-
-    // 	var a = document.createElement('a');
-    // 	a.href = 'javascript:void(0)';
-    // 	a.id = a.name = idname;
-    // 	a.classList.add('btn', 'btn-danger');
-    // 	a.appendChild(icon);
-
-    // 	var cell = document.createElement('td');
-    // 	cell.appendChild(a);
-    // 	tr.appendChild(cell);
-    // }
-
-
     // Function to toggle visibility of trainSection1 and trainSection2
     function toggleTrainSections() {
         var rEstablishedValue = document.querySelector('input[name="rEstablished"]:checked').value;
@@ -713,69 +732,58 @@ $combinedDataJSON = json_encode($combinedData);
                         disableFormElements();
                         // Update input values
 
-                        document.getElementById('trainSuggest').value = dataFpet.trainSuggest || '';
-                        document.getElementById('trainSuggestModal').value = dataFpet.trainSuggest || '';
-                        document.getElementById('idFpet').value = dataFpet.idFpet || '';
-                        document.getElementById('trainer').value = dataFpet.trainerNpk || '';
-                        document.getElementById('actual').value = dataFpet.actual || '';
-                        document.getElementById('target').value = dataFpet.target || '';
-                        document.getElementById('npk').value = dataFpet.trainerNpk || '';
-                        document.getElementById('notes').value = dataFpet.notes || '';
-                        document.getElementById('approvedHR').value = dataFpet.approvedHr || '';
+                        document.getElementById('trainSuggest').value = dataFpet.FPETFM_TRAINSUGGEST || '';
+                        document.getElementById('trainSuggestModal').value = dataFpet.FPETFM_TRAINSUGGEST || '';
+                        document.getElementById('idFpet').value = dataFpet.FPETFM_ID || '';
+                        document.getElementById('partisipanTraining').value = dataFpet.AWIEMP_NPK || '';
+                        document.getElementById('actual').value = dataFpet.FPETFM_ACTUAL || '';
+                        document.getElementById('target').value = dataFpet.FPETFM_TARGET || '';
+                        document.getElementById('npk').value = dataFpet.AWIEMP_NPK || '';
+                        document.getElementById('notes').value = dataFpet.FPETFM_NOTES || '';
+                        document.getElementById('approvedHR').value = dataFpet.FPETFM_HRAPPROVER || '';
 
-                        document.getElementById('approved').value = dataFpet.approved || '';
+                        document.getElementById('approved').value = dataFpet.FPETFM_APPROVER || '';
                         var rActualRadios = document.getElementsByName('rActual');
                         rActualRadios.forEach(radio => {
-                            if (radio.value === dataFpet.ractual.toString()) {
+                            if (radio.value === dataFpet.FPETFM_PACTUAL.toString()) {
                                 radio.checked = true;
                             }
                         });
                         // Set the radio button for rTarget based on the value received
                         var rTargetRadios = document.getElementsByName('rTarget');
                         rTargetRadios.forEach(radio => {
-                            if (radio.value === dataFpet.rtarget.toString()) {
+                            if (radio.value === dataFpet.FPETFM_PTARGET.toString()) {
                                 radio.checked = true;
                             }
                         });
 
-                        // Set the radio button for rEval based on the value received
-                        var rEvalRadios = document.getElementsByName('rEval');
-                        rEvalRadios.forEach(radio => {
-                            if (radio.value === dataFpet.reval.toString()) {
-                                radio.checked = true;
-                            }
-                        });
+
                         var formElement = document.getElementById('formMakeTrain');
                         formElement.setAttribute('action', '<?php echo base_url('FPET/approveHrFpet/') ?>' + id);
 
-                        document.getElementById('rTarget' + (dataFpet.rTarget || '')).checked = true;
-                        document.getElementById('rEval' + (dataFpet.rEval || '')).checked = true;
+                        // document.getElementById('rEval' + (dataFpet.FPETFM_PEVAL || '')).checked = true;
                         document.getElementById('btnSubApprove').style.display = 'none';
                         // Show the buttons
                         document.getElementById('btnDetailFpet').style.display = 'block';
-                        if (dataFpet.status == '1') {
-                            if (dataFpet.approved == <?php echo $this->session->userdata('npk'); ?> && dataFpet.statusApproved === 2) {
+                        if (dataFpet.FPETFM_STATUS == '1') {
+                            if (dataFpet.FPETFM_APPROVER == <?php echo $this->session->userdata('npk'); ?> && dataFpet.FPETFM_APPROVED === 2) {
                                 document.getElementById('rejectBtnFpet').style.display = 'inline-block';
                                 document.getElementById('approveBtnFpet').style.display = 'inline-block';
                                 var rejectBtnFpet = document.getElementById('rejectBtnFpet');
-                                rejectBtnFpet.setAttribute('href', '<?= base_url('FPET/rejectFpet/') ?>' + id);
+                                //  rejectBtnFpet.setAttribute('href', '<?= base_url('FPET/rejectFpet/') ?>' + id);
+                                rejectBtnFpet.setAttribute('onclick', "confirmApproval(0, '" + id + "')");
                                 var approveBtnFpet = document.getElementById('approveBtnFpet');
-                                approveBtnFpet.setAttribute('href', '<?= base_url('FPET/approveFpet/') ?>' + id);
+                                // approveBtnFpet.setAttribute('href', '<?= base_url('FPET/approveFpet/') ?>' + id);
+                                approveBtnFpet.setAttribute('onclick', "confirmApproval(1, '" + id + "')");
                             }
-                            if (dataFpet.approvedHr == <?php echo $this->session->userdata('npk'); ?> && (dataFpet.statusApproved === 1 || dataFpet.statusApproved === 0) && dataFpet.statusApprovedHr == 2) {
+                            if (dataFpet.FPETFM_HRAPPROVER == <?php echo $this->session->userdata('npk'); ?> && (dataFpet.FPETFM_APPROVED === 1 || dataFpet.FPETFM_APPROVED === 0) && dataFpet.FPETFM_HRAPPROVED == 2) {
                                 document.getElementById('rejectBtnFpetHr').style.display = 'inline-block';
                                 document.getElementById('approveBtnFpetHr').style.display = 'inline-block';
                                 var rejectBtnFpet = document.getElementById('rejectBtnFpetHr');
                                 rejectBtnFpet.setAttribute('href', '<?= base_url('FPET/rejectHrFpet/') ?>' + id);
-                                // var approveBtnFpet = document.getElementById('approveBtnFpetHr');
-                                // approveBtnFpet.setAttribute('href', '<?= base_url('FPET/approveHrFpet/') ?>' + id);
+                                rejectBtnFpet.setAttribute('onclick', "confirmApproval(3, '" + id + "')");
                                 document.getElementById('makeTrain').style.display = 'block';
-                                // var makeTrainElements = document.getElementById("makeTrain").getElementsByTagName("input");
 
-                                // Enable form elements in makeTrain, trainSection1, and trainSection2
-                                // enableFormElements(document.getElementById("makeTrain"));
-                                // enableFormElements(document.getElementById("trainSection1"));
-                                // enableFormElements(document.getElementById("trainSection2"));
                             }
                         }
                         document.getElementById("showListFpet").style.display = 'none';
@@ -803,11 +811,47 @@ $combinedDataJSON = json_encode($combinedData);
     }
 
     function showFormTrainModal() {
-
-
         new bootstrap.Modal(document.getElementById('trainModal')).show();
 
     };
+
+    function confirmApproval(code, id) {
+        if (code == 1) {
+            Swal.fire({
+                title: 'Konfirmasi Persetujuan FPET',
+                text: 'Apakah Anda yakin ingin menyetujui data ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '<?= base_url('FPET/rejectApproveFpet/') ?>' + code + '/' + id;
+                }
+            });
+        } else if (code == 0) {
+            Swal.fire({
+                title: 'Konfirmasi Penolakan FPET',
+                text: 'Apakah Anda yakin ingin menolak data ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (code == 0) {
+                        window.location.href = '<?= base_url('FPET/rejectApproveFpet/') ?>' + code + '/' + id;
+                    } else if (code == 3) {
+                        window.location.href = '<?= base_url('FPET/rejectApproveFpet/') ?>' + code + '/' + id;
+                    }
+                }
+            });
+        }
+    }
 </script>
 
 <?php include __DIR__ . '/../script2.php'; ?>

@@ -115,14 +115,14 @@ ob_start();
 							}
 						}
 						foreach ($tags as $t) {
-							$textColor = isColorLight($t->color); ?>
+							$textColor = isColorLight($t->TRNLBL_COLOR); ?>
 							<div class="col-sm-6 my-2">
-								<div class="card-rounded card-color" id="<?php echo $t->name_tag ?>" onmouseover="mouseIn('<?php echo $t->name_tag ?>', '<?php echo $t->color ?>')" onmouseout="mouseOut('<?php echo $t->name_tag ?>', '<?php echo $t->color ?>')" style="background-color: <?php echo $t->color ?>;">
+								<div class="card-rounded card-color" id="<?php echo $t->TRNLBL_NAME ?>" onmouseover="mouseIn('<?php echo $t->TRNLBL_NAME ?>', '<?php echo $t->TRNLBL_COLOR ?>')" onmouseout="mouseOut('<?php echo $t->TRNLBL_NAME ?>', '<?php echo $t->TRNLBL_COLOR ?>')" style="background-color: <?php echo $t->TRNLBL_COLOR ?>;">
 									<!-- <p><?php echo $i ?></p> -->
 									<b>
-										<h5 class="mb-0 ml-3 my-3" style="color: <?php echo $textColor ?>"><?php echo $t->name_tag ?></h5>
+										<h5 class="mb-0 ml-3 my-3" style="color: <?php echo $textColor ?>"><?php echo $t->TRNLBL_NAME ?></h5>
 									</b>
-									<div class="close-icon" onclick="confirmDeleteTag(<?php echo $t->id_tag ?>, <?php echo $t->total ?>)"><i style="font-size: 1.8rem;" class="la la-trash"></i></div>
+									<div class="close-icon" onclick="confirmDeleteTag(<?php echo $t->TRNLBL_ID ?>, <?php echo $t->TRNLBL_TOTAL ?>)"><i style="font-size: 1.8rem;" class="la la-trash"></i></div>
 								</div>
 							</div>
 						<?php $i++;
@@ -274,9 +274,9 @@ ob_start();
 	</div>
 </div>
 <script>
-	function showAdminModal() {
+	async function showAdminModal() {
+		await getAdmins();
 		new bootstrap.Modal(document.getElementById('addAdminModal')).show();
-		getAdmins();
 		document.getElementById('search_employee').value = '';
 		empArrAdmin = [];
 		searchKeyword('', '', 'allEmpTableAdmin');

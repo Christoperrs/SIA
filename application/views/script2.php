@@ -13,8 +13,6 @@
 	truncateTextIfNeeded();
 	window.addEventListener('resize', truncateTextIfNeeded);
 
-
-
 	function truncateTextIfNeeded() {
 		const pElement = document.getElementById('username');
 		const screenWidth = window.innerWidth;
@@ -26,7 +24,6 @@
 		} else {
 			pElement.classList.remove('truncate');
 		}
-		console.log('tr');
 	}
 
 	function confirmDeleteTraining(id) {
@@ -62,6 +59,7 @@
 			badgeElements.forEach(function(element) {
 				element.style.pointerEvents = 'pointer';
 			});
+
 		} else if (kode === 'main') {
 			listCardDiv.style.display = 'block';
 			detailFormDiv.style.display = 'none';
@@ -81,13 +79,13 @@
 			const firstToggleElement = document.querySelector('input[onchange="toggleAll(this.checked);"]');
 			if (firstToggleElement) {
 				firstToggleElement.parentNode.classList.remove('btn-info');
-				firstToggleElement.parentNodshowDetaile.classList.add('btn-default', 'off');
+				firstToggleElement.parentNode.classList.add('btn-default', 'off');
 			}
 			changeTitle('Tambah Training', true, '');
 		} else if (kode === 'detail') {
 			listCardDiv.style.display = 'none';
 			detailFormDiv.style.display = 'block';
-			resumeDiv.style.display = 'block';
+			// resumeDiv.style.display = 'block';
 			changeDisplayOfElements('none', ['allEmpDiv', 'submitBtn', 'substanceTableEdit', 'addFileBtn']);
 			changeDisplayOfElements('block', [isAdmin ? 'detailEmpDiv' : 'detailOnlyDiv', 'substanceTableDetail']);
 			changeTitle('Detail Training', true, '');
@@ -109,6 +107,9 @@
 
 	function clearForm() {
 		const judul = document.getElementById('temaTraining');
+		document.getElementById('tagsPre').classList.replace('badge-success', 'badge-danger');
+		document.getElementById('tagsRes').classList.replace('badge-success', 'badge-danger');
+		document.getElementById('tagsPost').classList.replace('badge-success', 'badge-danger');
 		document.getElementById('pemateri').value = '';
 		document.getElementById('search_keyword').value = '';
 		judul.value = '';
@@ -218,7 +219,7 @@
 		}
 	}
 
-	function createFileCell(id, path, code, tr) {
+	function createFileCell(id1, id, path, code, tr) {
 		var cell = document.createElement('td');
 		cell.classList.add('text-center');
 
@@ -232,6 +233,9 @@
 					if (code == 'detail') fileText += ' \u00A0\uD83D\uDC41';
 				}
 				a.textContent = fileText;
+				// if (fileText.includes('\u00A0\uD83D\uDC41')) {
+				// 	checkPreTest('x', 1);
+				// }
 			})
 			.catch(error => {
 				console.error('Error fetching data:', error);
@@ -249,36 +253,41 @@
 					});
 			}
 
-			// Check if the PDF row already exists
-			var pdfRow = tr.nextSibling;
-			if (pdfRow && pdfRow.classList.contains('pdf-row')) {
-				pdfRow.remove(); // Remove the existing PDF row
-			} else {
-				// Create a new row for displaying the PDF file
-				var newRow = document.createElement('tr');
-				newRow.classList.add('pdf-row');
+			var modal = document.getElementById('pdfModal');
+			modal.style.display = 'block';
 
-				var emptyCell = document.createElement('td');
+			var pdfViewer = document.getElementById('pdfViewer');
+			// Handle modal close event
 
-				var newCell = document.createElement('td');
-				newCell.colSpan = 3; // Set the colspan based on the number of columns in your table
+			pdfViewer.src = `${path}#toolbar=0&zoom=100&view=FitH`;
 
-				var pdfViewer = document.createElement('iframe');
-				pdfViewer.src = `${path}#toolbar=0&zoom=100&view=FitH`;
-				pdfViewer.width = '100%'; // Set the width based on your preference
-				pdfViewer.height = '500px'; // Set the height based on your preference
+			pdfViewer.onload = function() {
 
-				newCell.appendChild(pdfViewer);
-				newRow.appendChild(emptyCell);
-				newRow.appendChild(newCell);
+			};
 
-				// Insert the new row below the current row
-				tr.parentNode.insertBefore(newRow, tr.nextSibling);
+			var closeButton = document.getElementsByClassName('close')[0];
+			closeButton.onclick = function() {
+				modal.style.display = 'none';
+				pdfViewer.src = '';
+			};
+
+			window.onclick = function(event) {
+				if (event.target === modal) {
+					modal.style.display = 'none';
+					pdfViewer.src = '';
+					pdfViewer.contentWindow.document.body.oncontextmenu = function() {
+						return false;
+					};
+				}
+			};
+			if (!a.textContent.includes('\u00A0\uD83D\uDC41')) {
+				a.textContent += ' \u00A0\uD83D\uDC41';
 			}
 		});
 
 		cell.appendChild(a);
 		tr.appendChild(cell);
+
 	}
 
 	function createSelectCell(optionsValue, optionsArray, tr, idName, def) {
@@ -372,9 +381,10 @@
 
 	async function createCheckboxCell(name, value, tr, id, code, stat) {
 		try {
-			//	console.log("stat", name, value, tr, id, code, stat);
-			var tema = value.match(/[a-zA-Z]+|\d+/g)[0];
-			var npk = value.match(/[a-zA-Z]+|\d+/g)[1];
+			const regex = /^(.*?)(\d+)$/;
+			const match = value.match(regex);
+			var tema = match[1];
+			var npk = match[2];
 
 			var cell = document.createElement('td');
 			cell.classList.add('text-center');
@@ -451,13 +461,14 @@
 		a.appendChild(icon);
 
 		var cell = document.createElement('td');
+		cell.style.textAlign = 'center';
 		cell.appendChild(a);
 		tr.appendChild(cell);
 	}
 
 	async function createMultipleCells(emp, tr, id, file, part, stat) {
-		await createCheckboxCell('chkBoxAcc', 'part' + emp, tr, id, part, stat);
-		await createCheckboxCell('chkBoxAcc', 'file' + emp, tr, id, file, stat);
+		await createCheckboxCell('chkBoxAcc', 'TRNACC_PART' + emp, tr, id, part, stat);
+		await createCheckboxCell('chkBoxAcc', 'TRNACC_FILE' + emp, tr, id, file, stat);
 		if (stat == 2) {
 			createBadgeApproval('', emp, id, tr);
 			document.querySelector('input[value="part' + emp + '"]').disabled = true;
@@ -598,7 +609,7 @@
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState === XMLHttpRequest.DONE) {
 						if (xhr.status === 200) {
-							const admins = JSON.parse(xhr.responseText).map(obj => obj.npk);
+							const admins = JSON.parse(xhr.responseText).map(obj => obj.AWIEMP_NPK);
 							resolve(admins);
 						} else {
 							console.error('Error fetching data');
@@ -632,7 +643,7 @@
 		}
 	}
 
-	async function getTrainingByNPK(isAll, keyword, tagID) {
+	async function searchTraining(isAll, keyword, tagID) {
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -645,13 +656,12 @@
 			}
 		};
 
-		xhr.open('POST', '<?php echo base_url('Plus/getTrainingByNPK/') ?>', true);
+		xhr.open('POST', '<?php echo base_url('Plus/searchTraining/') ?>', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.send('isAll=' + encodeURIComponent(isAll) + '&keyword=' + encodeURIComponent(keyword) + '&tag=' + encodeURIComponent(tagID));
 	}
 
-	async function getTrainingByStatus(status) {
-		console.log(status);
+	async function filterTraining(status) {
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -664,7 +674,7 @@
 			}
 		};
 
-		xhr.open('POST', '<?php echo base_url('Plus/getTrainingByStatus/') ?>', true);
+		xhr.open('POST', '<?php echo base_url('Plus/filterTraining/') ?>', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.send('status=' + status);
 	}
@@ -711,6 +721,9 @@
 		const checked = [];
 		var counterEmp = 0;
 		var counterSub = 1;
+
+		//
+		var progress = 0;
 		if (id != '0') {
 			var formElement = document.getElementById('formTraining');
 			formElement.setAttribute('action', '<?php echo base_url('Training/editTraining/') ?>' + id);
@@ -721,44 +734,47 @@
 				})
 				.then(response => {
 					var data = JSON.parse(response);
-					console.log('zzz' + data);
-					trStat = data.header[0].status;
+					console.log(data);
+					trStat = data.header[0].TRNHDR_STATUS;
 					var packageArray = Object.values(data.package);
 
 					// Use map() to extract the package_id attribute from each package object
 					var packageIds = packageArray.map(function(package) {
-						return package.package_id;
+						return package.TRNPCK_ID;
 					});
 
 					var packageNames = packageArray.map(function(package) {
-						return package.package_name;
+						return package.TRNPCK_NAME;
 					});
 
-
 					data.employee.forEach(async function(emp) {
-
 						console.log(resumeText + "detail");
 						if (emp.STATUS != 3) {
 							empArrAdmin.push(emp.NPK);
 							// Data row
 							var tr = document.createElement('tr');
 							var idRow = document.getElementById('tBodyDetailEmp') ? 'rowForm' : 'rowFormDet';
-
 							tr.id = idRow + emp.NPK;
-
 							createTextCell(counterEmp + 1, tr, 'number', 'center');
 							createTextCell(emp.NAMA, tr, 'text', 'left');
 							createTextCell(emp.DEPARTEMEN, tr, 'text', 'left');
 							createTextCell(emp.PROGRESS, tr, 'text', 'center');
+							if (<?php echo $this->session->userdata['npk']; ?> == emp.NPK) {
+
+								progress = emp.PROGRESS;
+								checkPreTest(id, progress, data.header[0].TRNHDR_CATEGORY, data.resume.TRNACC_RESUME);
+
+							} else {
+								document.getElementById('examDiv').style.display = 'none';
+							}
+
 							// createTextCell(Math.round(emp.PERCENT) + '%', tr, 'text', 'center');
 							const accessPromise = getAccessData(emp.NPK, id).then(acc => {
 								if (isAdmin) {
-									createMultipleCells(emp.NPK, tr, id, acc.file, acc.part, emp.STATUS)
+									createSelectCell(packageIds, packageNames, tr, 'soalSelect' + emp.NPK, '-- Pilih Paket --');
+									createMultipleCells(emp.NPK, tr, id, acc.TRNACC_FILE, acc.TRNACC_PART, emp.STATUS);
 								}
 							});
-
-							createSelectCell(packageIds, packageNames, tr, 'soalSelect' + emp.NPK, '-- Pilih Paket --');
-
 							t.appendChild(tr);
 							counterEmp++;
 							promises.push(accessPromise);
@@ -768,19 +784,52 @@
 					Promise.all(promises).then(() => {
 						if (tableBodyDetOnly) isDataTableExist(counterEmp, 1, 5, 'emptyParticipantDet', 'tBodyDetailOnlyEmp');
 						if (tableBody) isDataTableExist(counterEmp, 1, 8, 'emptyParticipant', 'tBodyDetailEmp');
-					});
-					document.getElementById('idTraining').value = data.header[0].id_training_header;
-					// Set the value of the id_training_header as the href attribute of the anchor element
-					document.getElementById('examPrePost').setAttribute('href', "<?php echo base_url('Question/getPreExam/') ?>" + data.header[0].id_training_header);
 
-					document.getElementById('temaTraining').value = data.header[0].judul_training_header;
-					document.getElementById('pemateri').value = data.header[0].pemateri;
+						$("[name^='soalSelect']").each(function() {
+							$(this).on('change', function() {
+								var changedValue = $(this).val(); // Retrieve the changed value
+								var elementId = $(this).attr('id').substring('soalSelect'.length); // Retrieve the id of the element
+								assignPackage(changedValue, elementId, data.header[0].TRNHDR_ID); // Call the 'assignPackage' function
+							});
+						});
+
+					});
+					document.getElementById('idTraining').value = data.header[0].TRNHDR_ID;
+					// Set the value of the TRNHDR_ID as the href attribute of the anchor element
+					if (data.header[0].TRNHDR_STATUS == 2) {
+						var dataPreTest = null;
+						if (data.pretest && data.pretest.length > 0) {
+							dataPreTest = data.pretest[0].preScore;
+							if (data.pretest[0].preScore != null) {
+								document.getElementById('tagsPre').classList.replace('badge-danger', 'badge-success');
+							}
+							if (data.pretest[0].postScore != null) {
+								document.getElementById('tagsPost').classList.replace('badge-danger', 'badge-success');
+							}
+						}
+
+						if (dataPreTest === null || dataPreTest === undefined) {
+							//	var examPrePostUrl = "<?php echo base_url('Question/getQuestExam/') ?>" + id + "/" + 1;
+							document.getElementById('examPrePost').setAttribute('onclick', 'getQuestExam(' + id + ', "1")');
+
+						} else {
+							//	var examPrePostUrl = "<?php echo base_url('Question/getQuestExam/') ?>" + id + "/" + 2;
+							document.getElementById('examPrePost').setAttribute('onclick', 'getQuestExam(' + id + ', "2")');
+
+						}
+					} else {
+						document.getElementById('examDiv').style.display = 'none';
+					}
+					// document.getElementById('examPrePost').setAttribute('href', examPrePostUrl);
+					document.getElementById('temaTraining').value = data.header[0].TRNHDR_TITLE;
+					document.getElementById('jenis').value = data.header[0].TRNHDR_CATEGORY;
+					document.getElementById('pemateri').value = data.header[0].TRNHDR_INSTRUCTOR;
 					document.getElementById('editBtn').onclick = function() {
 						doEdit(id, status);
 					};
 
 					var base_url = "<?= base_url('Training/modifyTraining/') ?>";
-					var judul_training_header = data.header[0].id_training_header;
+					var judul_training_header = data.header[0].TRNHDR_ID;
 					if (document.getElementById('deleteBtn')) document.getElementById('deleteBtn').onclick = function() {
 						confirmDeleteTraining(judul_training_header + '0');
 					};
@@ -789,32 +838,39 @@
 					rowCountMateriForm = data.substance.length;
 					if (isAdmin) {
 						isDataTableExist(rowCountMateriForm, 'x', 4, 'emptyData', 'tBodySubstanceTableDetail');
+
 					} else {
 						isDataTableExist(rowCountMateriForm, 'x', 3, 'emptyData', 'tBodySubstanceTableDetail');
-
 					}
-					if (rowCountMateriForm != 0) {
-						data.substance.forEach(function(substance) {
-							var tableBody = document.getElementById('tBodySubstanceTableDetail');
-							var row = document.createElement('tr');
-
-							createTextCell(counterSub, row, 'number', 'center');
-							createTextCell(substance.judul_training_detail, row, 'text', 'left');
-							createFileCell(substance.id_training_detail, substance.path_file_training_detail, substance.status == 2 ? '' : 'detail', row);
-							if (substance.status == 2) {
-								createBadgeApproval(substance.id_training_detail, '', '', row);
-							}
-							counterSub++;
-							tableBody.appendChild(row);
-						});
+					if (data.header[0].TRNHDR_CATEGORY == "Elearning") {
+						if (rowCountMateriForm != 0) {
+							data.substance.forEach(function(substance) {
+								var tableBody = document.getElementById('tBodySubstanceTableDetail');
+								var row = document.createElement('tr');
+								createTextCell(counterSub, row, 'number', 'center');
+								createTextCell(substance.TRNSUB_TITLE, row, 'text', 'left');
+								createFileCell(id, substance.TRNSUB_ID, substance.TRNSUB_PATH, substance.TRNSUB_STATUS == 2 ? '' : 'detail', row);
+								if (substance.TRNSUB_STATUS == 2) {
+									createBadgeApproval(substance.TRNSUB_ID, '', '', row);
+								}
+								counterSub++;
+								tableBody.appendChild(row);
+							});
+						}
+						document.getElementById('tagsPre').style.display = 'inline';
+						document.getElementById('tagsPost').style.display = 'inline';
+					} else {
+						document.getElementById('substanceDiv').style.display = 'none';
+						document.getElementById('examDiv').style.display = 'none';
+						document.getElementById('tagsPre').style.display = 'none';
+						document.getElementById('tagsPost').style.display = 'none';
 					}
-
 					populateTagsSection(data.tags, 'detail');
 
 					const accessData = getAccessData(<?php echo $this->session->userdata['npk']; ?>, id).then(access => {
-						if (access.part == 1 || access.file == 1 || isAdmin) {
+						if (access.TRNACC_PART == 1 || access.TRNACC_FILE == 1 || isAdmin) {
 							arr = ['editBtn'];
-							if ((data.header[0].status == 1)) {
+							if ((data.header[0].TRNHDR_STATUS == 1)) {
 								arr.push('deleteBtn');
 								arr.push('publishBtn');
 							} else {
@@ -823,22 +879,93 @@
 							changeDisplayOfElements('block', arr);
 						}
 					});
+					console.log("resum" + data.resume.TRNACC_RESUME);
 
-					if (data.resume && data.resume.length > 0) {
-						var resumeText = data.resume[0].resume;
+					if (data.resume.TRNACC_RESUME) {
+						var resumeText = data.resume.TRNACC_RESUME;
 						document.getElementById('readResume').value = resumeText;
-
+						document.getElementById('tagsRes').classList.replace('badge-danger', 'badge-success');
 						document.getElementById("resumeLink").innerText = "Detail Resume";
-
 					} else {
-
 						document.getElementById("resumeLink").innerText = "Buat Resume";
+					}
+
+
+				})
+				.catch(error => {
+					console.error('Error fetching data showdetail:', error);
+				});
+
+			console.log("sii2" + progress);
+		}
+	}
+
+	async function checkPreTest(id, doneModul, category, resume) {
+		if (category == "Elearning") {
+			fetch('<?= base_url('Training/checkPreTest/') ?>' + id)
+				.then(response => {
+					return response.text();
+				})
+				.then(response => {
+					var data = JSON.parse(response);
+					console.log("ambil id" + data.pretest[0].preScore);
+					var dataPreTest = null;
+					if (data.pretest && data.pretest.length > 0) {
+						dataPreTest = data.pretest[0].preScore;
+					}
+					console.log("data2" + dataPreTest);
+					if (dataPreTest === null || dataPreTest === undefined) {
+						document.getElementById('substanceDiv').style.display = 'none';
+						document.getElementById('resumeDiv').style.display = 'none';
+						document.getElementById('examDiv').style.display = 'block';
+					} else {
+						document.getElementById('substanceDiv').style.display = 'block';
+						document.getElementById('resumeDiv').style.display = 'block';
+						document.getElementById('examDiv').style.display = 'none';
+
+						var input = doneModul;
+						console.log("data" + doneModul);
+						var slashIndex = input.indexOf('/');
+						var a = input.substring(0, slashIndex);
+						var b = input.substring(slashIndex + 1);
+						console.log("var a is =", a);
+						console.log("resume b is =", resume);
+
+						if (a == b && a != 0 && resume != null) {
+							document.getElementById('examDiv').style.display = 'block';
+						}
 					}
 				})
 				.catch(error => {
 					console.error('Error fetching data showdetail:', error);
 				});
+		} else {
+			document.getElementById('examDiv').style.display = 'none';
 		}
+	}
+
+
+	function getQuestExam(id, PreOrPost) {
+		Swal.fire({
+			title: 'Konfirmasi Pelaksanaan Tes',
+			text: 'Anda tidak dapat mengulangi tes!',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Ya',
+			cancelButtonText: 'Tidak'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				//	window.location.href = '<?= base_url('Question/getQuestExam/') ?>' + id + "/" + PreOrPost;
+				if (result.isConfirmed) {
+					var hashedId = CryptoJS.MD5(id.toString()).toString();
+					var hashedPreOrPost = CryptoJS.MD5(PreOrPost.toString()).toString();
+					window.location.href = '<?= base_url('Question/getQuestExam/') ?>' + hashedId + "/" + hashedPreOrPost;
+				}
+
+			}
+		});
 	}
 
 	async function toggleTab(tabName) {
@@ -857,7 +984,7 @@
 		else if (tabName == 'published') status = '= 2';
 		else if (tabName == 'draft') status = '= 1';
 		else if (tabName == 'allWithRequest') status = '> x';
-		await getTrainingByStatus(status);
+		await filterTraining(status);
 	}
 
 	function modifyTrainingTable(trainings) {
@@ -866,8 +993,6 @@
 		container.innerHTML = '';
 		paging.innerHTML = '';
 		var counter = 1;
-		console.log(trainings);
-		console.log(isAdmin + "tes");
 		trainings.forEach((t, index) => {
 			const cardHTML = `
 				<div class="col-sm-3 card-item ${counter <= 4 ? 'fade-in' : 'fade-out hide-after-fade-out'}">
@@ -876,7 +1001,7 @@
 							<img src="assets/img/picLog.png" style="width: 100%">
 							<div class="row overlay-content" style="width: 100%">
 								<div class="col-sm-6">
-								${t.status === 2 ? `
+								${t.TRNHDR_STATUS === 2 ? `
 									<span class="badge badge-success">Published</span>`
 								: '<span class="badge badge-warning">Draft</span>'}
 								</div>
@@ -891,12 +1016,12 @@
 						<div class="card-body">
 							<div class="row">
 								<div class="col-sm-8 pr-0">
-									<h4 class="card-title">${t.judul_training_header.length > 15 ? t.judul_training_header.substring(0, 15) + '...' : t.judul_training_header}</h4>
+									<h4 class="card-title">${t.TRNHDR_TITLE.length > 15 ? t.TRNHDR_TITLE.substring(0, 15) + '...' : t.TRNHDR_TITLE}</h4>
 									<p class="card-category">${t.detail_count} materi</p>
 									<p class="card-category">${t.participant_count} partisipan</p>
 								</div>
 								<div class="col d-flex align-items-center justify-content-end p-0 pr-3">
-									<a href="javascript:void(0)" onclick="showDetail(${t.id_training_header})" class="btn btn-primary px-2">
+									<a href="javascript:void(0)" onclick="showDetail(${t.TRNHDR_ID})" class="btn btn-primary px-2">
 										<i class="la la-bars" style="font-size: 16px;"></i> Detail
 									</a>
 								</div>
@@ -970,20 +1095,18 @@
 		document.getElementById('ddTags').textContent = name;
 		document.getElementById('ddTags').name = id;
 		if (isAdmin) activateClassActive('all');
-		await getTrainingByNPK(!document.getElementById('myTraining').checked, document.getElementById('search_training').value.trim(), id);
+		await searchTraining(!document.getElementById('myTraining').checked, document.getElementById('search_training').value.trim(), id);
 	}
 
 	async function toggleMine(select) {
 		if (isAdmin) activateClassActive('all');
-		await getTrainingByNPK(!select, document.getElementById('search_training').value.trim(), document.getElementById('ddTags').name.trim());
+		await searchTraining(!select, document.getElementById('search_training').value.trim(), document.getElementById('ddTags').name.trim());
 	}
 
-	document.getElementById('search_training').addEventListener('keyup', function() {
-		(async () => {
-			if (isAdmin) activateClassActive('all');
-			await getTrainingByNPK(!document.getElementById('myTraining').checked, this.value.trim(), document.getElementById('ddTags').name.trim());
-		})();
-	});
+	async function searchByKey(element) {
+		if (isAdmin) activateClassActive('all');
+		await searchTraining(!document.getElementById('myTraining').checked, element.value.trim(), document.getElementById('ddTags').name.trim());
+	}
 </script>
 
 <!-- Participant Section -->
@@ -1001,7 +1124,6 @@
 				}
 			}
 		});
-		console.log('emp: ' + empArrAdmin);
 	}
 
 	document.getElementById('search_keyword').addEventListener('keyup', function() {
@@ -1057,7 +1179,6 @@
 	}
 
 	async function addEmp(id) {
-		console.log('adm: ' + isAdmin);
 		if (isAdmin) {
 			var index = empArrAdmin.indexOf(id);
 			if (index !== -1) {
@@ -1160,15 +1281,14 @@
 		const container = document.getElementById('tagsContainer');
 		container.innerHTML = '';
 		if (code == 'clear') tags = [];
-		console.log(trStat + " tr");
 		data.forEach(function(tag) {
-			var col = isColorLight(tag.color);
-			const quer = trStat == 2 ? '' : `onclick="addTags('tags${tag.id_tag}')"`;
+			var col = isColorLight(tag.TRNLBL_COLOR);
+			const quer = trStat == 2 ? '' : `onclick="addTags('tags${tag.TRNLBL_ID}')"`;
 			const cardHTML = `
-				<span class="badge tags" id="tags${tag.id_tag}" style="background-color: ${tag.color}; color: ${col}; border-color: white;" ` + quer + `
-				onmouseover="mouseIn('tags${tag.id_tag}', '${tag.color}')" onmouseout="mouseOut('tags${tag.id_tag}', '${tag.color}')">${tag.name_tag}</span>
+				<span class="badge tags" id="tags${tag.TRNLBL_ID}" style="background-color: ${tag.TRNLBL_COLOR}; color: ${col}; border-color: white;" ` + quer + `
+				onmouseover="mouseIn('tags${tag.TRNLBL_ID}', '${tag.TRNLBL_COLOR}')" onmouseout="mouseOut('tags${tag.TRNLBL_ID}', '${tag.TRNLBL_COLOR}')">${tag.TRNLBL_NAME}</span>
 			`;
-			if (code == 'detail') tags.push(tag.id_tag);
+			if (code == 'detail') tags.push(tag.TRNLBL_ID);
 			container.innerHTML += cardHTML;
 		});
 	}
@@ -1212,7 +1332,7 @@
 		}
 
 		const accessData = getAccessData(npk, id).then(async access => {
-			if (!(access.part == 1 || access.file == 1 || isAdmin)) {
+			if (!(access.TRNACC_PART == 1 || access.TRNACC_FILE == 1 || isAdmin)) {
 				Swal.fire({
 					title: 'ERROR',
 					text: 'Anda mengakses menu terlarang. Silakan refresh halaman!',
@@ -1222,7 +1342,7 @@
 				});
 				return;
 			} else {
-				await checkAccess(access.part, access.file);
+				await checkAccess(access.TRNACC_PART, access.TRNACC_FILE);
 			}
 		});
 
@@ -1254,7 +1374,7 @@
 				// createTextCell(idNow, materiRow, 'number', 'center');
 				createInputCell('materiId' + idNow, 'hidden', substance.id_detail, materiRow);
 				createTextCell(substance.title, materiRow, 'text', 'left')
-				createFileCell(substance.id_detail, substance.path, '', materiRow);
+				createFileCell(id, substance.id_detail, substance.path, '', materiRow);
 				createDeleteActionCell('deleteRowSubstanceCommit' + idNow, materiRow);
 
 				rowCountMateriForm++;
@@ -1335,16 +1455,16 @@
 		document.getElementById('titlePackage').textContent = id == 'x' ? 'Tambah Paket' : 'Edit Paket';
 		document.getElementById('navPackage').textContent = 'Soal / ' + (id == 'x' ? 'Tambah Paket Soal' : 'Edit Paket Soal');
 		if (id != 'x') {
-			fetch('<?= base_url('Question/retrievePackage/') ?>' + id)
+			fetch('<?= base_url('Question/getPackage/') ?>' + id)
 				.then(response => response.json())
 				.then(data => {
 					var package = data['package'];
 					var questions = data['questions'];
 					console.log(questions);
-					document.getElementById('idUniqPaket').value = package['package_uniqueId'];
-					document.getElementById('namePaket').value = package['package_name'];
-					document.getElementById('chooseTrain').value = package['training_id'];
-					document.getElementById('package_id').value = package['package_id'];
+					document.getElementById('idUniqPaket').value = package['TRNPCK_UNIQUEID'];
+					document.getElementById('namePaket').value = package['TRNPCK_NAME'];
+					document.getElementById('chooseTrain').value = package['TRNHDR_ID'];
+					document.getElementById('package_id').value = package['TRNPCK_ID'];
 					document.getElementById('decider').value = questions.length;
 					createTableQuestion(questions.length);
 
@@ -1360,21 +1480,18 @@
 
 								if (propertyName) {
 									element.value = questions[i][propertyName];
-									element.oninput = function() {
-										removeStyle(element);
-									};
+									(function() {
+										if (element) {
+											element.oninput = function() {
+												removeStyle(element);
+											};
+										}
+									})();
 								}
 							}
 						});
 
-						header.forEach(function(field) {
-							var element = document.getElementById(field);
-							element.oninput = function() {
-								removeStyle(element);
-							};
-						});
-
-						document.getElementById('questionId' + (i + 1)).value = questions[i]['question_id'];
+						document.getElementById('TRNQUE_ID' + (i + 1)).value = questions[i]['question_id'];
 					}
 				})
 				.catch(error => {
@@ -1382,40 +1499,46 @@
 				});
 		}
 
+		header.forEach(function(field) {
+			var element = document.getElementById(field);
+			element.oninput = function() {
+				removeStyle(element);
+			};
+		});
 		changePForm('modify');
 		document.getElementById('scrollableDiv').scrollTop = 0;
 	}
 
 	var fields = [{
-			id: 'questionId',
+			id: 'TRNQUE_ID',
 			label: 'ID Pertanyaan'
 		},
 		{
-			id: 'levelSelect',
+			id: 'TRNQUE_LEVEL',
 			label: 'Level Pertanyaan'
 		},
 		{
-			id: 'answerSelect',
+			id: 'TRNQUE_ANSWER',
 			label: 'Jawaban Benar'
 		},
 		{
-			id: 'question',
+			id: 'TRNQUE_QUESTION',
 			label: 'Pertanyaan'
 		},
 		{
-			id: 'aOption',
+			id: 'TRNQUE_AOPT',
 			label: 'Pilihan A'
 		},
 		{
-			id: 'bOption',
+			id: 'TRNQUE_BOPT',
 			label: 'Pilihan B'
 		},
 		{
-			id: 'cOption',
+			id: 'TRNQUE_COPT',
 			label: 'Pilihan C'
 		},
 		{
-			id: 'dOption',
+			id: 'TRNQUE_DOPT',
 			label: 'Pilihan D'
 		}
 	];
@@ -1423,6 +1546,10 @@
 	var header = ['idUniqPaket', 'namePaket', 'chooseTrain', 'decider'];
 
 	function changePForm(code) {
+		header.forEach(function(field) {
+			var element = document.getElementById(field);
+			removeStyle(element);
+		});
 		document.getElementById('packagePage').style.display = (code == 'main') ? 'block' : 'none';
 		document.getElementById('modifyPackagePage').style.display = (code == 'modify') ? 'block' : 'none';
 		callLoader();
@@ -1440,7 +1567,7 @@
 				var elementId = field.id + i;
 				var element = document.getElementById(elementId);
 
-				if (!elementId.includes('questionId') && (element.value == '' || element.value == 'default')) {
+				if (!elementId.includes('TRNQUE_ID') && (element.value == '' || element.value == 'default')) {
 					element.style.borderColor = 'red';
 					next = false;
 				}
@@ -1628,18 +1755,36 @@
 			tr.id = 'rowSoal' + i;
 
 			createTextCell(i, tr, 'number', 'center');
-			createInputCell('question' + i, 'textarea', '', tr);
-			createInputCell('questionId' + i, 'hidden', '', tr);
-			createSelectCell(['Low', 'Medium', 'High'], ['Low', 'Medium', 'High'], tr, "levelSelect" + i, "--");
-			createSelectCell(['A', 'B', 'C', 'D'], ['A', 'B', 'C', 'D'], tr, "answerSelect" + i, "--");
-			createInputCell('aOption' + i, 'textarea', '', tr);
-			createInputCell('bOption' + i, 'textarea', '', tr);
-			createInputCell('cOption' + i, 'textarea', '', tr);
-			createInputCell('dOption' + i, 'textarea', '', tr);
+			createInputCell('TRNQUE_QUESTION' + i, 'textarea', '', tr);
+			createInputCell('TRNQUE_ID' + i, 'hidden', '', tr);
+			createSelectCell(['Low', 'Medium', 'High'], ['Low', 'Medium', 'High'], tr, "TRNQUE_LEVEL" + i, "--");
+			createSelectCell(['A', 'B', 'C', 'D'], ['A', 'B', 'C', 'D'], tr, "TRNQUE_ANSWER" + i, "--");
+			createInputCell('TRNQUE_AOPT' + i, 'textarea', '', tr);
+			createInputCell('TRNQUE_BOPT' + i, 'textarea', '', tr);
+			createInputCell('TRNQUE_COPT' + i, 'textarea', '', tr);
+			createInputCell('TRNQUE_DOPT' + i, 'textarea', '', tr);
 			tableBody.appendChild(tr);
 		}
 
 		isDataTableExist(max, 1, 8, 'emptyData', 'tBodyAllSoal');
+	}
+
+	function assignPackage(value, npk, id) {
+		$.ajax({
+			url: 'Training/updateTRNPCK', // Replace ControllerName with your actual controller name
+			method: 'POST',
+			data: {
+				AWIEMP_NPK: npk,
+				TRNHDR_ID: id,
+				TRNPCK_ID: value
+			},
+			success: function(response) {
+				console.log(response);
+			},
+			error: function(xhr, status, error) {
+				console.error(xhr.responseText);
+			}
+		});
 	}
 
 	function generateQuestionRows() {
@@ -1662,16 +1807,17 @@
 		createTableQuestion(max);
 
 		fields.forEach(function(field) {
-			for (var i = 1; i <= max; i++) {
-				var elementId = field.id + i;
-				var element = document.getElementById(elementId);
+			for (var i = 0; i <= max; i++) {
+				(function() {
+					var elementId = field.id + i;
+					var element = document.getElementById(elementId);
 
-				if (element) {
-					console.log(element);
-					element.oninput = function() {
-						removeStyle(element);
-					};
-				}
+					if (element) {
+						element.oninput = function() {
+							removeStyle(element);
+						};
+					}
+				})();
 			}
 		});
 

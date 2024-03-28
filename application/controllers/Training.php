@@ -20,8 +20,8 @@ class Training extends CI_Controller
 	{
 		if (!$this->isAllowed()) return redirect(site_url());
 		$npk = $this->session->userdata('npk');
-		$data['training']   = $this->TrainingM->getTrainingByNPK(true, '', '');
-		$data['substance']  = $this->TrainingM->getAllSubstance();
+		$data['training']   = $this->TrainingM->searchTraining(true, '', '');
+		$data['substance']  = $this->TrainingM->getAllSubstances();
 		$data['employee']   = $this->OracleDBM->getAllEmp();
 		$data['dept']       = $this->OracleDBM->getAllDept();
 		$data['notif']		= $this->TrainingM->getNotif($npk);
@@ -40,19 +40,20 @@ class Training extends CI_Controller
 	{
 		$npk = $this->session->userdata('npk');
 		$data["header"] = $this->TrainingM->getTrainingHeader($id);
-		$emps           = $this->TrainingM->getEmployeeByTraining($id);
+		$data["pretest"] = $this->TrainingM->checkPreTest($npk, $id);
+		$emps           = $this->TrainingM->getParticipantByTraining($id);
 		$data["package"]  = $this->QuestionM->getpackageQuest($id);
 		$detailEmployeeE = [];
 		foreach ($emps as $emp) {
-			$employee   = $this->OracleDBM->getEmpBy('NPK', $emp->npk);
-			$prog       = $this->TrainingM->getProgress($id, $emp->npk);
+			$employee   = $this->OracleDBM->getEmpByNPK($emp->AWIEMP_NPK);
+			$prog       = $this->TrainingM->getProgress($id, $emp->AWIEMP_NPK);
 			$combinedData = [
 				'NPK'       => $employee->NPK,
 				'NAMA'      => $employee->NAMA,
 				'DEPARTEMEN' => $employee->DEPARTEMEN,
 				'PERCENT'   => $prog->percentage,
 				'PROGRESS'  => $prog->progress,
-				'STATUS'	=> $this->TrainingM->getAccessByNPKID($employee->NPK, $id)->access_permission,
+				'STATUS'	=> $this->TrainingM->getAccessByNPKID($employee->NPK, $id)->TRNACC_PERMISSION,
 
 			];
 			$detailEmployeeE[] = $combinedData;
@@ -63,12 +64,12 @@ class Training extends CI_Controller
 		$data["employee"]   = $detailEmployeeE;
 		$data["tags"]   	= $this->AdminM->getTagsByID($id);
 		$data["resume"]  = $this->TrainingM->getResumePersonal($npk, $id);
-
 		echo json_encode($data);
 	}
 
 	public function modifyTraining($str)
 	{
+		// Publish/Delete training
 		$id = substr($str, 0, strlen($str) - 1);
 		$code = substr($str, -1);
 		$this->TrainingM->modifyTraining($id, $code);
@@ -77,6 +78,10 @@ class Training extends CI_Controller
 
 	public function saveTraining()
 	{
+		// Saving new training
+		if (!$this->isAllowed()) return redirect(site_url());
+
+		// Saving training
 		$this->TrainingM->saveTraining();
 		$lastInsertedId = $this->db->insert_id();
 
@@ -95,6 +100,8 @@ class Training extends CI_Controller
 		// 		$count++;
 		// 	}
 		// }
+
+		// Saving each substance
 		for ($i = 1; $i <= $count; $i++) {
 			$judulMateri = $this->input->post('materiTitle' . $i);
 
@@ -117,6 +124,7 @@ class Training extends CI_Controller
 			}
 		}
 
+		// Saving each participant
 		$checkedCheckboxes = $this->input->post('chkBoxemp');
 		if (!empty($checkedCheckboxes)) {
 			foreach ($checkedCheckboxes as $checkbox) {
@@ -126,10 +134,11 @@ class Training extends CI_Controller
 			}
 		}
 
+		// Saving each label
 		$tags = json_decode($this->input->post('tags'));
 		if (!empty($tags)) {
 			foreach ($tags as $tag) {
-				$this->TrainingM->saveTagDetail($tag, $lastInsertedId);
+				$this->TrainingM->saveLabelDetail($tag, $lastInsertedId);
 			}
 		}
 		redirect('Training');
@@ -158,11 +167,11 @@ class Training extends CI_Controller
 			}
 
 			$tags = json_decode($this->input->post('tags'));
-			$this->TrainingM->resetTags($tags, $this->input->post('idTraining'));
+			$this->TrainingM->resetLabels($tags, $this->input->post('idTraining'));
 			if (!empty($tags)) {
 				$id =	$this->input->post('idTraining');
 				foreach ($tags as $tag) {
-					if (!$this->TrainingM->getDataTag($tag, $id)) $this->TrainingM->saveTagDetail($tag, $id);
+					if (!$this->TrainingM->isLabelExist($tag, $id)) $this->TrainingM->saveLabelDetail($tag, $id);
 				}
 			}
 
@@ -176,8 +185,8 @@ class Training extends CI_Controller
 			}
 
 			foreach ($idDetail as $detail) {
-				if (!in_array($detail->id_training_detail, $materiIdArray)) {
-					$this->TrainingM->modifySubstance($detail->id_training_detail);
+				if (!in_array($detail->TRNSUB_ID, $materiIdArray)) {
+					$this->TrainingM->modifySubstance($detail->TRNSUB_ID);
 				}
 			}
 			$count = 0;
@@ -284,15 +293,34 @@ class Training extends CI_Controller
 		// Retrieve form data from POST request
 		$textResume = $this->input->post('textResume');
 
-
 		$data = array(
-			'resume' => $textResume
-			// 'created_date'              => date('Y/m/d H:i:s'),
-			// 'created_by'                => $this->session->userdata('npk')
+			'TRNACC_RESUME'		=> $textResume,
+			'TRNACC_MODIDATE'   => date('Y/m/d H:i:s'),
+			'TRNACC_MODIBY'     => $this->session->userdata('npk')
 		);
 
 		$saved = $this->TrainingM->modifyResume($data, $idHeader);
 
-		//  redirect(site_url('FPET'));
+		redirect(site_url('Training'));
+	}
+	public function checkPreTest($idHeader)
+	{
+		$npk = $this->session->userdata('npk');
+		$data['pretest'] = $this->TrainingM->checkPreTest($npk, $idHeader);
+
+		echo json_encode($data);
+	}
+
+	public function updateTRNPCK()
+	{
+		$AWIEMP_NPK = $this->input->post('AWIEMP_NPK');
+		$TRNHDR_ID = $this->input->post('TRNHDR_ID');
+		$data = array(
+			'TRNPCK_ID_PRE' 	=> $this->input->post('TRNPCK_ID'),
+			'TRNPCK_ID_POST' 	=> $this->input->post('TRNPCK_ID'),
+			'TRNACC_MODIDATE'   => date('Y/m/d H:i:s'),
+			'TRNACC_MODIBY'     => $this->session->userdata('npk')
+		);
+		$this->QuestionM->savePreExam($data, $AWIEMP_NPK, $TRNHDR_ID);
 	}
 }

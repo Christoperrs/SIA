@@ -59,7 +59,7 @@ function isActive($url)
                                     <div class="notif-center">
                                         <?php foreach ($notif as $e) { ?>
                                             <div class="notification-container" data-id="<?= $e->npk ?>">
-                                                <a href="javascript:void(0)" onclick="removeNotification('<?= $e->npk ?>', <?= $e->id_training_header ?>, $('#totalNotif'));" class="time">
+                                                <a href="javascript:void(0)" onclick="removeNotification('<?= $e->npk ?>', <?= $e->TRNHDR_ID ?>, $('#totalNotif'));" class="time">
                                                     <div class="notif-icon notif-danger"> <i class="la la-trash"></i> </div>
                                                     <div class="notif-content">
                                                         <span class="block">
@@ -72,14 +72,14 @@ function isActive($url)
                                             </div>
                                         <?php } ?>
                                         <?php foreach ($notifMateri as $m) { ?>
-                                            <div class="notification-container" data-id="<?= $m->id_training_detail ?>">
-                                                <a href="javascript:void(0)" onclick="removeNotifMateri(<?= $m->id_training_detail ?>, $('#totalNotif'));" class="time">
+                                            <div class="notification-container" data-id="<?= $m->TRNSUB_ID ?>">
+                                                <a href="javascript:void(0)" onclick="removeNotifMateri(<?= $m->TRNSUB_ID ?>, $('#totalNotif'));" class="time">
                                                     <div class="notif-icon notif-danger"> <i class="la la-trash"></i> </div>
                                                     <div class="notif-content">
                                                         <span class="block">
                                                             <?php echo $m->judul; ?>
                                                         </span>
-                                                        <span class="time">Pengajuan <?php echo $m->judul_training_detail ?> Ditolak</span><br>
+                                                        <span class="time">Pengajuan <?php echo $m->TRNSUB_TITLE ?> Ditolak</span><br>
                                                         <span class="time">Klik untuk Hapus</span>
                                                     </div>
                                                 </a>
@@ -111,36 +111,35 @@ function isActive($url)
                     </div>
                 </div>
                 <div class="row" style="padding-left: 10px; padding-right: 10px; padding-top: 20px">
+
                     <?php
                     $i = 1;
                     $sectionNumber = 1;
+                    // foreach ($maxQuestShow as $x) {
+                    //     $maxQuestShow =  $x->settings;
+                    // }
                     foreach ($preExam as $t) {
-                        if (($i - 1) % 2 == 0) {
-                            if ($i != 0) {
-                                echo '</div>';
-                            }
-                            echo '<div class="row" style="padding-left:30px; id="sectionNumber-' . $sectionNumber . '">';
-                            $sectionNumber++;
-                        }
-                        if ($i == 1 || $i == 2) {
+
+                        if ($i <= $maxQuestShow) {
                     ?>
+
                             <div class="col-4">
-                                <div class="card bg-secondary text-white text-center p-2" id=numberPage<?php echo $i; ?> onclick="handleCardClick((<?php echo $sectionNumber; ?>)-2, <?php echo $sectionNumber ?>)">
+                                <div class="card bg-primary  text-white text-center p-2" id=numbNavBtn<?php echo $i; ?> onclick="handleCardClick(<?php echo $i ?>, 'x')">
                                     <?php echo $i; ?>
                                 </div>
                             </div>
                         <?php
-                            $i++;
                         } else {
                         ?>
                             <div class=" col-4">
-                                <div class="card bg-primary text-white text-center p-2" id=numberPage<?php echo $i; ?> onclick="handleCardClick((<?php echo $sectionNumber; ?>)-2, <?php echo $sectionNumber ?>)">
+                                <div class="card  bg-secondary text-white text-center p-2" id=numbNavBtn<?php echo $i; ?> onclick="handleCardClick(<?php echo $i ?>, 'x')">
                                     <?php echo $i; ?>
                                 </div>
                             </div>
                     <?php
-                            $i++;
+
                         }
+                        $i++;
                     }
                     ?>
                 </div>
@@ -161,98 +160,108 @@ function isActive($url)
                 <div class="container-fluid">
 
                     <div id="showQuestion">
-                        <div class="col-md-12">
-                            <form id="formExam" method="post" action="<?php echo base_url('Question/saveExam') ?>" ; enctype="multipart/form-data" role="form">
-                                <?php if (!empty($preExam)) {
-                                    foreach ($preExam as $t) { ?>
-                                        <input type="text" name="idPackage" id="idPackage" value="<?php echo $t->package_id ?>" hidden>
-                                <?php }
-                                } ?>
-                                <div class="card p-2">
-                                    <?php
-                                    $i = 0;
-                                    $section = 1;
-                                    if (!empty($preExam)) {
-                                        foreach ($preExam as $t) {
-                                            if ($i % 2 == 0) {
-                                                if ($i != 0) {
-                                                    echo '</div>'; // Close the previous section
-                                                }
-                                                echo '<div class="question-section" id="section-' . $section . '">'; // Start a new section
-                                                $section++;
-                                            }
-                                    ?>
-                                            <div class="card-body" style="border-bottom: 1px solid #ebedf2 !important;">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-check" id="number<?php echo $i ?>">
-                                                            <script>
-                                                                var count = document.querySelectorAll('[id^="number"]').length;
+                        <div class="card p-2">
 
-                                                                // Output the count
-                                                                console.log(count);
-                                                            </script>
-                                                            <input type="text" name="idQuestion<?php echo $i ?>" id="idQuestion" value="<?php echo $t->question_id ?>" hidden>
-                                                            <label><?php echo ($i + 1) . '. ' . $t->question ?> <span style="color: red;">*</span></label><br />
-                                                            <div class="row">
-                                                                <label class="form-radio-label ml-3">
-                                                                    <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="<?php echo $t->a ?>">
-                                                                    <span class="form-radio-sign">A. <?php echo $t->a ?></span>
-                                                                </label>
-                                                            </div>
-                                                            <div class="row">
-                                                                <label class="form-radio-label ml-3">
-                                                                    <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="<?php echo $t->b ?>">
-                                                                    <span class="form-radio-sign">B. <?php echo $t->b ?></span>
-                                                                </label>
-                                                            </div>
-                                                            <div class="row">
-                                                                <label class="form-radio-label ml-3">
-                                                                    <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="<?php echo $t->c ?>">
-                                                                    <span class="form-radio-sign">C. <?php echo $t->c ?> </span>
-                                                                </label>
-                                                            </div>
-                                                            <div class="row">
-                                                                <label class="form-radio-label ml-3">
-                                                                    <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="<?php echo $t->d ?>">
-                                                                    <span class="form-radio-sign">D. <?php echo $t->d ?></span>
-                                                                </label>
-                                                            </div>
+                            <div class="col-md-12">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h4 class="card-title">Penilaian </h4>
+                                            <p class="card-category">Kerjakan Ujian dengan Jujur</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <form id="formExam" method="post" action="<?php echo base_url('Question/saveExam/' . $idTraining) ?>" enctype="multipart/form-data" role="form">
+
+                                    <?php if (!empty($preExam)) {
+                                        foreach ($preExam as $t) { ?>
+                                            <input type="text" name="idPackage" id="idPackage" value="<?php echo $t->TRNPCK_ID ?>" hidden>
+
+                                        <?php }
+                                        ?> <input type="text" name="idTraining" id="idTraining" value="<?php echo $idTraining ?>" hidden>
+
+                                    <?php
+                                    } ?>
+                                    <div class="card-body" style="border-bottom: 1px solid #ebedf2 !important;">
+                                        <?php
+                                        $i = 1;
+                                        $section = 1;
+                                        $j = 0;
+                                        foreach ($preExam as $t) {
+                                            $j++;
+                                        }
+                                        $max_j = isset($max_j) ? max($j, $max_j) : $j;
+                                        if (!empty($preExam)) {
+                                            foreach ($preExam as $t) {
+
+                                        ?>
+                                                <div id="questionNumber<?php echo $i ?>">
+                                                    <div class="form-check">
+                                                        <input type="text" name="idQuestion<?php echo $i ?>" id="idQuestion" value="<?php echo $t->TRNQUE_ID ?>" hidden>
+                                                        <label><?php echo ($i) . '. ' . $t->TRNQUE_QUESTION ?> <span style="color: red;">*</span></label><br />
+                                                        <div class="row">
+                                                            <label class="form-radio-label ml-3">
+                                                                <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="A">
+                                                                <span class=" form-radio-sign">A. <?php echo $t->TRNQUE_AOPT ?></span>
+                                                            </label>
                                                         </div>
+                                                        <div class="row">
+                                                            <label class="form-radio-label ml-3">
+                                                                <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="B" onclick="updateNumbNavBtn(<?php echo $i ?>)">
+                                                                <span class=" form-radio-sign">B. <?php echo $t->TRNQUE_BOPT ?></span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="row">
+                                                            <label class="form-radio-label ml-3">
+                                                                <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="C" onclick="updateNumbNavBtn(<?php echo $i ?>)">
+                                                                <span class=" form-radio-sign">C. <?php echo $t->TRNQUE_COPT ?> </span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="row">
+                                                            <label class="form-radio-label ml-3">
+                                                                <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="D" onclick="updateNumbNavBtn(<?php echo $i ?>)">
+                                                                <span class=" form-radio-sign">D. <?php echo $t->TRNQUE_DOPT ?></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <?php if ($i % $maxQuestShow  == 0 || $max_j == $i) { ?>
+                                                        <div class="card-body" id="divBackSub">
+                                                            <?php if ($max_j != $i) { ?>
+                                                                <button type="button" id="nextBtn<?php echo $i; ?>" class="btn btn-success float-right" onclick="handleCardClick('x',(<?php echo $i; ?>+1) )">Selanjutnya</button>
+                                                                <button type="button" id="backBtn<?php echo $i; ?>" class="btn btn-danger" onclick="handleCardClick2('x', <?php echo $i; ?>)">Kembali</button>
+                                                            <?php } else { ?>
+                                                                <button type="button" id="submitExam<?php echo $i; ?>" class="btn btn-success float-right" onclick="saveAnswer()">Kirim</button>
+                                                                <button type="button" id="backBtn<?php echo $i; ?>" class="btn btn-danger" onclick="handleCardClick2('x', <?php echo $i; ?>)">Kembali</button>
+                                                            <?php } ?>
+                                                        </div>
+
+                                                    <?php
+                                                    } ?>
+                                                </div>
+                                            <?php
+                                                $i++;
+                                            }
+                                        } else {
+                                            ?>
+                                            <div class=" card-body d-flex justify-content-center" style="border-bottom: 1px solid #ebedf2 !important;">
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-12">
+
+                                                        <img src="<?php echo base_url("assets/img/dataEmpty1.jpg") ?>" style="max-height: 163px">
+                                                        <h4 class="card-title">Tidak ada data soal!</h4>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <?php if (($i + 1) % 2 == 0) { ?>
-                                                <div class="card-body" id="divBackSub">
-                                                    <script>
-                                                        console.log(<?php echo $section - 1; ?> + "secBtn")
-                                                    </script>
-
-                                                    <button type="button" id="nextBtn<?php echo $section - 1; ?>" class="btn btn-success float-right" onclick="handleCardClick((<?php echo $section; ?>)-1, <?php echo $section ?>)">Selanjutnya</button>
-                                                    <button type="button" id="submitExam<?php echo $section - 1; ?>" class="btn btn-success float-right" onclick="saveAnswer()" style="display: none;">Kirim</button>
-                                                    <button type="button" id="backBtn<?php echo $section - 1; ?>" class="btn btn-danger" onclick="handleCardClick2((<?php echo $section; ?>)-2, <?php echo $section ?>)">Kembali</button>
-                                                </div>
-                                        <?php
-                                            }
-                                            $i++;
-                                        }
-                                    } else {
-                                        ?>
-                                        <div class=" card-body d-flex justify-content-center" style="border-bottom: 1px solid #ebedf2 !important;">
-                                            <div class="row justify-content-center">
-                                                <div class="col-md-12">
-
-                                                    <img src="<?php echo base_url("assets/img/dataEmpty1.jpg") ?>" style="max-height: 163px">
-                                                    <h4 class="card-title">Tidak ada data soal!</h4>
-                                                </div>
-                                            </div>
-                                        </div>
 
 
 
-                                    <?php } ?>
-                                </div>
-                            </form>
+                                        <?php } ?>
+
+
+
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     <div id="showScore" style="display: none;">
@@ -291,26 +300,61 @@ function isActive($url)
                 </div>
             </div>
             <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    var sections = document.querySelectorAll('.question-section');
-                    var currentSectionIndex = 0;
-                    var pageNumb = 0;
-                    var pageNumb2 = 0;
-                    var backButton = document.getElementById('backBtn1');
-                    if (backButton) {
-                        backButton.style.display = 'none';
-                    }
-                    hideSections();
+                // function handleRadioCheck(questionNumber, answerValue) {
+                //     var numbNavBtn = document.getElementById('numbNavBtn' + questionNumber);
+                //     if (numbNavBtn) {
+                //         if (document.querySelector('input[name="answer' + questionNumber + '"]:checked').value === answerValue) {
+                //             numbNavBtn.classList.remove('bg-primary');
+                //             numbNavBtn.classList.add('bg-success');
+                //         } else {
+                //             numbNavBtn.classList.remove('bg-success');
+                //             numbNavBtn.classList.add('bg-primary');
+                //         }
+                //     }
+                // }
 
-                    function hideSections() {
-                        sections.forEach(function(section, index) {
-                            if (index !== currentSectionIndex) {
-                                section.style.display = 'none';
-                            } else {
-                                section.style.display = 'block';
-                            }
-                        });
+                // function submitExam() {
+                //     var formElements = document.getElementById(" formExam");
+                //     formElements.submit();
+                // }
+                function updateNumbNavBtn(i) {
+                    var answerRadio = document.querySelector('input[name="answer' + i + '"]:checked');
+                    var numbNavBtn = document.getElementById('numbNavBtn' + i);
+                    if (answerRadio) {
+                        numbNavBtn.classList.add('bg-success');
+                    } else {
+                        numbNavBtn.classList.remove('bg-success');
                     }
+                }
+
+                document.addEventListener("DOMContentLoaded", function() {
+                    var quest = document.querySelectorAll('[id^="questionNumber"]');
+                    var maxNumber = 0;
+                    var maxShowQuestion = <?php echo $maxQuestShow; ?>;
+                    // Loop through each element with ID starting with "questionNumber"
+                    quest.forEach(function(element) {
+                        // Extract the numerical portion from the ID and convert it to an integer
+                        var questNumber = parseInt(element.id.replace('questionNumber', ''));
+
+                        // Update maxNumber if questNumber is greater than current max
+                        if (questNumber > maxNumber) {
+                            maxNumber = questNumber;
+                        }
+                    });
+                    document.getElementById('backBtn<?php echo $maxQuestShow; ?>').style.display = 'none';
+
+                    // Loop through each element again to set display style
+                    quest.forEach(function(element) {
+                        var questNumber = parseInt(element.id.replace('questionNumber', ''));
+                        if (questNumber <= maxShowQuestion) {
+                            console.log(questNumber + "questNumber" + maxShowQuestion + "max");
+                            element.style.display = 'block';
+                        } else {
+                            element.style.display = 'none';
+                        }
+                    });
+
+
 
                 });
             </script>
@@ -497,84 +541,169 @@ function isActive($url)
     $(document).ready(function() {
         updateDateTime();
         setInterval(updateDateTime, 1000);
+        callLoader();
     });
 
-    function handleCardClick(cardNumber, cardBegin) {
-        var allNumberPages = document.querySelectorAll('[id^="numberPage"]');
-        allNumberPages.forEach(function(page) {
-            page.classList.remove('bg-secondary');
-            page.classList.add('bg-primary');
-        });
-
-        var questionSections = document.getElementsByClassName('question-section');
-        var lastSectionId = questionSections[questionSections.length - 1].id;
-        var lastSectionNumber = lastSectionId.split('-')[1];
-        console.log("lastSectionNumber" + lastSectionNumber);
-        console.log("cardNumb" + (cardNumber + 1));
-        if (lastSectionNumber == (cardNumber + 1)) {
-            document.getElementById('submitExam' + lastSectionNumber).style.display = 'block';
-            document.getElementById('nextBtn' + lastSectionNumber).style.display = 'none';
-        }
-        var sections = document.querySelectorAll('.question-section');
-
-        pageNumb = (cardNumber + 1) * 2;
-        pageNumb2 = (cardNumber + 1) * 2 - 1;
-        document.getElementById('numberPage' + pageNumb2).classList.add('bg-secondary');
-        document.getElementById('numberPage' + pageNumb).classList.add('bg-secondary');
-        document.getElementById('numberPage' + pageNumb2).classList.remove('bg-primary');
-        document.getElementById('numberPage' + pageNumb).classList.remove('bg-primary');
-
-
-        // if (cardBegin < 1) {
-
-        //     document.getElementById('backBtn').style.display = 'none';
-        // } else {
-
-
-        // }
-
-        sections.forEach(function(section, index) {
-            if (index !== cardNumber) {
-                section.style.display = 'none';
-            } else {
-                section.style.display = 'block';
-            }
-        });
+    function callLoader() {
+        var loader = document.getElementById('loaderDiv');
+        setTimeout(function() {
+            loader.classList.add('fade-out');
+            setTimeout(function() {
+                loader.style.display = 'none';
+            }, 500);
+        }, 500);
+        loader.style.display = '';
+        loader.classList.remove('fade-out');
     }
 
-    function handleCardClick2(cardNumber, cardBegin) {
-        var allNumberPages = document.querySelectorAll('[id^="numberPage"]');
-        allNumberPages.forEach(function(page) {
-            page.classList.remove('bg-secondary');
-            page.classList.add('bg-primary');
+    function handleCardClick(numberQuestNav, btnQuest) {
+        var allnumbNavBtns = document.querySelectorAll('[id^="numbNavBtn"]');
+        var maxnumbNavBtn = 0;
+        allnumbNavBtns.forEach(function(element) {
+            var idNumber = parseInt(element.id.replace('numbNavBtn', '')); // Extract numeric part of ID
+            maxnumbNavBtn = Math.max(maxnumbNavBtn, idNumber); // Update maxnumbNavBtn if necessary
         });
-        var sections = document.querySelectorAll('.question-section');
 
-        pageNumb = (cardNumber) * 2;
-        pageNumb2 = (cardNumber) * 2 - 1;
-        document.getElementById('numberPage' + pageNumb2).classList.add('bg-secondary');
-        document.getElementById('numberPage' + pageNumb).classList.add('bg-secondary');
-        document.getElementById('numberPage' + pageNumb2).classList.remove('bg-primary');
-        document.getElementById('numberPage' + pageNumb).classList.remove('bg-primary');
+        var allquestionNumber = document.querySelectorAll('[id^="questionNumber"]');
 
-
-        // if (cardBegin <script 1) {
-
-        //     document.getElementById('backBtn').style.display = 'none';
-
-
-        if (pageNumb2 == 1) {
-
-            document.getElementById('backBtn1').style.display = 'none';
-
-        }
-        sections.forEach(function(section, index) {
-            if (index !== (cardNumber - 1)) {
-                section.style.display = 'none';
-            } else {
-                section.style.display = 'block';
+        allnumbNavBtns.forEach(function(page) {
+            if (!page.classList.contains('bg-success')) {
+                if (page.classList.contains('bg-primary')) {
+                    page.classList.remove('bg-primary');
+                    page.classList.add('bg-secondary');
+                }
             }
         });
+
+        allquestionNumber.forEach(function(page) {
+            page.style.display = 'block';
+            page.style.display = 'none';
+        });
+        var maxNumber = 0;
+
+        if (numberQuestNav != 'x') {
+            var minNumberQuestShow = 0;
+            var maxNumberQuestShow = <?php echo $maxQuestShow; ?>;
+
+            var result = 0;
+            if (numberQuestNav % <?php echo $maxQuestShow; ?> == 0) {
+                result = (numberQuestNav / <?php echo $maxQuestShow; ?>) - 1
+            } else {
+                result = (Math.floor(numberQuestNav / <?php echo $maxQuestShow; ?>));
+
+            }
+            if (result >= 1) {
+                minNumberQuestShow = (result * <?php echo $maxQuestShow; ?>);
+                maxNumberQuestShow = (result + 1) * <?php echo $maxQuestShow; ?>;
+            }
+            while (minNumberQuestShow < maxNumberQuestShow && minNumberQuestShow < maxnumbNavBtn) {
+
+                minNumberQuestShow++;
+                var currentElementId = "questionNumber" + minNumberQuestShow;
+                var currentElement = document.getElementById(currentElementId);
+
+                if (currentElement) {
+                    currentElement.style.display = 'block';
+                }
+                var numbNavBtn = document.getElementById('numbNavBtn' + minNumberQuestShow);
+                if (numbNavBtn && !numbNavBtn.classList.contains('bg-success')) {
+                    numbNavBtn.classList.remove('bg-secondary');
+                    numbNavBtn.classList.add('bg-primary');
+                }
+
+            }
+
+        }
+        if (btnQuest != 'x') {
+            var minNumberQuestShow = 0;
+            var maxNumberQuestShow = <?php echo $maxQuestShow; ?>;
+            var result = 0;
+            if (btnQuest % <?php echo $maxQuestShow; ?> == 0) {
+                result = (btnQuest / <?php echo $maxQuestShow; ?>) - 1
+            } else {
+                result = (Math.floor(btnQuest / <?php echo $maxQuestShow; ?>));
+                if (result >= 1) {
+                    minNumberQuestShow = (result * <?php echo $maxQuestShow; ?>);
+                    maxNumberQuestShow = (result + 1) * <?php echo $maxQuestShow; ?>;
+                }
+            }
+
+            while (minNumberQuestShow < maxNumberQuestShow && minNumberQuestShow < maxnumbNavBtn) {
+
+                minNumberQuestShow++;
+                var currentElementId = "questionNumber" + minNumberQuestShow;
+                var currentElement = document.getElementById(currentElementId);
+
+                if (currentElement) {
+                    currentElement.style.display = 'block';
+                }
+                var numbNavBtn = document.getElementById('numbNavBtn' + minNumberQuestShow);
+                if (numbNavBtn && !numbNavBtn.classList.contains('bg-success')) {
+                    numbNavBtn.classList.remove('bg-secondary');
+                    numbNavBtn.classList.add('bg-primary');
+                }
+
+            }
+        }
+
+    }
+
+    function handleCardClick2(numberQuestNav, btnQuest) {
+        var allnumbNavBtns = document.querySelectorAll('[id^="numbNavBtn"]');
+        var maxnumbNavBtn = 0;
+        allnumbNavBtns.forEach(function(element) {
+            var idNumber = parseInt(element.id.replace('numbNavBtn', '')); // Extract numeric part of ID
+            maxnumbNavBtn = Math.max(maxnumbNavBtn, idNumber); // Update maxnumbNavBtn if necessary
+        });
+
+        var allquestionNumber = document.querySelectorAll('[id^="questionNumber"]');
+
+        allnumbNavBtns.forEach(function(page) {
+            if (!page.classList.contains('bg-success')) {
+                if (page.classList.contains('bg-primary')) {
+                    page.classList.remove('bg-primary');
+                    page.classList.add('bg-secondary');
+                }
+            }
+        });
+
+
+        allquestionNumber.forEach(function(page) {
+            page.style.display = 'block';
+            page.style.display = 'none';
+        });
+        var maxNumber = 0;
+        if (btnQuest != 'x') {
+            var minNumberQuestShow = 0;
+            var maxNumberQuestShow = <?php echo $maxQuestShow; ?>;
+            var result = 0;
+            if (btnQuest % <?php echo $maxQuestShow; ?> == 0) {
+                result = (btnQuest / <?php echo $maxQuestShow; ?>) - 2;
+            } else {
+                result = (Math.floor(btnQuest / <?php echo $maxQuestShow; ?>));
+                if (result >= 1) {
+                    minNumberQuestShow = (result - 1) * <?php echo $maxQuestShow; ?>;
+                    maxNumberQuestShow = (result * <?php echo $maxQuestShow; ?>);
+                }
+            }
+            console.log("minNumberQuestShow " + minNumberQuestShow + "max" + maxNumberQuestShow);
+            while (minNumberQuestShow < maxNumberQuestShow && minNumberQuestShow < maxnumbNavBtn) {
+
+                minNumberQuestShow++;
+                var currentElementId = "questionNumber" + minNumberQuestShow;
+                var currentElement = document.getElementById(currentElementId);
+
+                if (currentElement) {
+                    currentElement.style.display = 'block';
+                }
+                var numbNavBtn = document.getElementById('numbNavBtn' + minNumberQuestShow);
+                if (numbNavBtn && !numbNavBtn.classList.contains('bg-success')) {
+                    numbNavBtn.classList.remove('bg-secondary');
+                    numbNavBtn.classList.add('bg-primary');
+                }
+
+            }
+        }
     }
 
     function backExam() {
@@ -594,56 +723,72 @@ function isActive($url)
         });
     }
 
-    async function saveAnswer() {
-        var formElements = document.getElementById("formExam");
-        formElements.submit();
-        fetch('<?= base_url('Question/getScore/') ?>')
-            .then(response => {
-                return response.json(); // Parse response as JSON
-            })
-            .then(data => {
-                console.log(data);
-                const score = data.score;
-                document.getElementById('showScore').style.display = 'block';
-                document.getElementById('showQuestion').style.display = 'none';
+    // async function saveAnswer() {
+    //     var formElements = document.getElementById("formExam");
+    //     formElements.submit();
+    //     fetch('<?= base_url('Question/getScore/') ?>')
+    //         .then(response => {
+    //             return response.json(); // Parse response as JSON
+    //         })
+    //         .then(data => {
+    //             console.log(data);
+    //             const score = data.score;
+    //             document.getElementById('showScore').style.display = 'block';
+    //             document.getElementById('showQuestion').style.display = 'none';
 
-                document.getElementById('score').value = score;
-            })
-            .catch(error => {
-                console.error('Error fetching data showdetail:', error);
-            });
-        // const score = data.score;
-        // const totalQuestion = data.totalQuestion;
-        // const trueAnswer = data.trueAnswer;
+    //             document.getElementById('score').value = score;
+    //         })
+    //         .catch(error => {
+    //             console.error('Error fetching data showdetail:', error);
+    //         });
 
-        // document.getElementById('showScore').style.display = 'block';
-        // document.getElementById('showQuestion').style.display = 'none';
-        // document.getElementById('trueAns').value = score;
-        // document.getElementById('score').value = score;
-        // document.getElementById('xx').value = trueAnswer + "/" + totalQuestion;
 
-    }
+    // }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Select all elements with id starting with "number"
-        var elements = document.querySelectorAll('[id^="number"]');
+    function saveAnswer() {
+        // Get all elements with name starting with 'answer'
 
-        // Loop through each element
-        elements.forEach(function(element) {
-            // Get the id attribute value
-            var id = element.id;
+        var answerInputs = document.querySelectorAll('input[name^="answer"]');
+        var isFilled = true;
 
-            // Extract the number from the id
-            var number = parseInt(id.replace("number", "")); // Parse the number as an integer
+        // Check if any radio button is not checked
+        answerInputs.forEach(function(input) {
+            // Extract the question number from the input name
+            var questionNumber = input.name.replace("answer", "");
 
-            // Check if the current number is higher than the highestNumber
-            if (number > highestNumber) {
-                highestNumber = number; // Update highestNumber if the current number is higher
+            // Check if the corresponding radio button for this question is checked
+            if (!document.querySelector('input[name="answer' + questionNumber + '"]:checked')) {
+                console.log("Unchecked radio button ID: " + input.id);
+                isFilled = false;
+                return;
             }
-            // Output the number
-            console.log("Number:", number);
         });
-    });
+        // Display SweetAlert if any radio button is not checked
+        if (!isFilled) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please answer all questions before submitting!'
+            });
+            return;
+        }
+
+        // If all radio buttons are checked, show confirmation dialog
+        Swal.fire({
+            title: 'Confirmation',
+            text: 'Apakah Anda yakin ingin mengirim data?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If user confirms, submit the form
+                document.getElementById('formExam').submit();
+            }
+        });
+    }
 </script>
 
 </html>

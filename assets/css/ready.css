@@ -7077,3 +7077,30 @@ body {
   outline: 0 !important;
   box-shadow: none !important;
 }
+
+.forum-class {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.long-description {
+  max-width: 200vw; /* Set it to twice the width of the viewport */
+}
+
+.image-article {
+  width: 100%;
+  height: 0;
+  padding-top: 62.5%; /* 10/16 * 100 = 62.5% (16:10 aspect ratio) */
+  position: relative;
+  overflow: hidden;
+}
+
+.image-article img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the entire container */
+}

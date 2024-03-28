@@ -5,11 +5,11 @@ ob_start();
 $combinedData = [];
 $uniqueIds = [];
 foreach ($substance as $s) {
-	$title = $s->judul_training_detail;
-	$id_header = $s->id_training_header;
-	$id_detail = $s->id_training_detail;
-	$path = $s->path_file_training_detail;
-	$status = $s->status;
+	$title = $s->TRNSUB_TITLE;
+	$id_header = $s->TRNHDR_ID;
+	$id_detail = $s->TRNSUB_ID;
+	$path = $s->TRNSUB_PATH;
+	$status = $s->TRNSUB_STATUS;
 	$combinedData[] = array(
 		'title' => $title, 'id_header' => $id_header,
 		'id_detail' => $id_detail, 'path' => $path,
@@ -50,7 +50,7 @@ $combinedDataJSON = json_encode($combinedData);
 									<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" x-placement="top-start" style="position: absolute; transform: translate3d(0px, 0px, 0px); top: 0px; left: 0px; will-change: transform; max-height: 200px; overflow-y: auto;">
 										<a class="dropdown-item" id="all" href="javascript:void(0)" onclick="tagFilter('', 'ALL')">ALL</a>
 										<?php foreach ($tags as $t) { ?>
-											<a class="dropdown-item" id="<?php echo $t->id_tag ?>" href="javascript:void(0)" onclick="tagFilter(<?php echo $t->id_tag ?>, '<?php echo $t->name_tag ?>')"><?php echo $t->name_tag ?></a>
+											<a class="dropdown-item" id="<?php echo $t->TRNLBL_ID ?>" href="javascript:void(0)" onclick="tagFilter(<?php echo $t->TRNLBL_ID ?>, '<?php echo $t->TRNLBL_NAME ?>')"><?php echo $t->TRNLBL_NAME ?></a>
 										<?php } ?>
 									</ul>
 								</div>
@@ -59,7 +59,7 @@ $combinedDataJSON = json_encode($combinedData);
 								<div class="form-group form-inline p-0">
 									<label for="search_training">Search:&nbsp;&nbsp;</label>
 									<div class="col p-0">
-										<input type="text" class="form-control input-full" id="search_training" name="search_training" style="width: 100%;">
+										<input type="text" class="form-control input-full" id="search_training" name="search_training" style="width: 100%;" onkeyup="searchByKey(this)">
 									</div>
 								</div>
 							</div>
@@ -104,7 +104,7 @@ $combinedDataJSON = json_encode($combinedData);
 							<img src="assets/img/picLog.png" style="width: 100%">
 							<div class="row overlay-content" style="width: 100%">
 								<div class="col-sm-6">
-									<?php if ($t->status == 2) { ?>
+									<?php if ($t->TRNHDR_STATUS == 2) { ?>
 										<span class="badge badge-success">Published</span>
 									<?php } else { ?>
 										<span class="badge badge-warning">Draft</span>
@@ -125,12 +125,12 @@ $combinedDataJSON = json_encode($combinedData);
 						<div class="card-body">
 							<div class="row">
 								<div class="col-sm-8 pr-0">
-									<h4 class="card-title"><?php echo (strlen($t->judul_training_header) > 15) ? substr($t->judul_training_header, 0, 15) . '...' : $t->judul_training_header; ?></h4>
+									<h4 class="card-title"><?php echo (strlen($t->TRNHDR_TITLE) > 15) ? substr($t->TRNHDR_TITLE, 0, 15) . '...' : $t->TRNHDR_TITLE; ?></h4>
 									<p class="card-category"><i class="la la-file-pdf-o"></i>&ensp;<?php echo $t->detail_count ?> materi</p>
 									<p class="card-category"><i class="la la-users"></i>&ensp;<?php echo $t->participant_count ?> partisipan</p>
 								</div>
 								<div class="col d-flex align-items-center justify-content-end p-0 pr-3">
-									<a href="javascript:void(0)" onclick="showDetail(<?php echo $t->id_training_header ?>)" class="btn btn-primary px-2"><i class="la la-bars" style="font-size: 16px;"></i> Detail</a>
+									<a href="javascript:void(0)" onclick="showDetail(<?php echo $t->TRNHDR_ID ?>)" class="btn btn-primary px-2"><i class="la la-bars" style="font-size: 16px;"></i> Detail</a>
 								</div>
 							</div>
 						</div>
@@ -233,11 +233,25 @@ $combinedDataJSON = json_encode($combinedData);
 										}
 									}
 									foreach ($tags as $t) {
-										$textColor = isColorLight($t->color); ?>
-										<span class="badge tags" id="tags<?php echo $t->id_tag ?>" style="background-color: <?php echo $t->color ?>; color: <?php echo $textColor ?>; border-color: white;" onclick="addTags('tags<?php echo $t->id_tag ?>')" onmouseover="mouseIn('tags<?php echo $t->id_tag . '\', \'' . $t->color ?>')" onmouseout="mouseOut('tags<?php echo $t->id_tag . '\', \'' .  $t->color ?>')"><?php echo $t->name_tag ?></span>
+										$textColor = isColorLight($t->TRNLBL_COLOR); ?>
+										<span class="badge tags" id="tags<?php echo $t->TRNLBL_ID ?>" style="background-color: <?php echo $t->TRNLBL_COLOR ?>; color: <?php echo $textColor ?>; border-color: white;" onclick="addTags('tags<?php echo $t->TRNLBL_ID ?>')" onmouseover="mouseIn('tags<?php echo $t->TRNLBL_ID . '\', \'' . $t->TRNLBL_COLOR ?>')" onmouseout="mouseOut('tags<?php echo $t->TRNLBL_ID . '\', \'' .  $t->TRNLBL_COLOR ?>')"><?php echo $t->TRNLBL_NAME ?></span>
 									<?php } ?>
 								</div>
 								<!-- <input type="text" class="form-control input-pill mb-3" name="pemateri" id="pemateri" placeholder="Masukkan Pemateri"> -->
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<label class="my-2">Jenis Pelatihan</label>
+								<input type="text" class="form-control input-pill mb-3" name="jenis" id="jenis" readonly>
+							</div>
+							<div class="col">
+								<label class="my-2">Progress</label><br />
+								<div id="tagsProgress">
+									<span class="badge badge-danger" id="tagsPre">Pre-Test</span>
+									<span class="badge badge-danger" id="tagsRes">Resume</span>
+									<span class="badge badge-danger" id="tagsPost">Post-Test</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -321,7 +335,7 @@ $combinedDataJSON = json_encode($combinedData);
 										<th scope="col" class="text-center" style="width: 300px;" onclick="sortDetailEmpTable(1)">Nama Karyawan</th>
 										<th scope="col" class="text-center" style="width: 300px;" onclick="sortDetailEmpTable(2)">Departemen</th>
 										<th scope="col" class="text-center" style="width: 100px;" onclick="sortDetailEmpTable(3)">Progres</th>
-										<th scope="col" class="text-center" style="width: 100px;" onclick="sortDetailEmpTable(4)">Persentase</th>
+										<th scope="col" class="text-center" style="width: 100px;" onclick="sortDetailEmpTable(4)">Paket Soal</th>
 										<th scope="col" class="text-center" style="width: 100px;">Tambah Partisipan</th>
 										<th scope="col" class="text-center" style="width: 100px;">Upload Materi</th>
 										<th scope="col" class="text-center" style="width: 150px;" onclick="sortDetailEmpTable(7)">Permintaan</th>
@@ -352,7 +366,6 @@ $combinedDataJSON = json_encode($combinedData);
 										<th scope="col" class="text-center" onclick="sortDetailOnlyEmpTable(4)">Persentase</th>
 									</tr>
 								</thead>
-
 								<tbody id="tBodyDetailOnlyEmp">
 								</tbody>
 							</table>
@@ -371,9 +384,9 @@ $combinedDataJSON = json_encode($combinedData);
 								<thead>
 									<tr>
 										<!-- <th scope="col" class="text-center" style="width: 50px;">No.</th> -->
-										<th scope="col" class="text-center" style="width: 560px;">Judul Materi</th>
-										<th scope="col" class="text-center" style="width: 560px;">File</th>
-										<th scope="col" class="text-center" style="width: 90px;">Aksi</th>
+										<th scope="col" class="text-center" style="width: 600px;">Judul Materi</th>
+										<th scope="col" class="text-center" style="width: 600px;">File</th>
+										<th scope="col" class="text-center" style="width: 130px;">Aksi</th>
 									</tr>
 								</thead>
 								<tbody id="tBodySubstanceTableEdit2">
@@ -402,21 +415,19 @@ $combinedDataJSON = json_encode($combinedData);
 							</table>
 						</div>
 					</div>
+
 					<div id="resumeDiv" class="card-body" style="border-bottom: 1px solid #ebedf2 !important;  display: none;">
 						<label class="mb-2">Resume</label>
 						<a href="javascript:void(0)" id="resumeLink" onclick="makeFormResume()" class="btn btn-info btn-border float-right mb-3">
 						</a>
-
 						<div class="col-md-12">
 							<label class="my-2">Tulis catatan</label>
 							<textarea class="form-control" id="readResume" readonly name="readResume" rows="10" maxlength="1000" placeholder="Masukkan pendapat Anda"></textarea>
 						</div>
-
-
 					</div>
 					<div id="examDiv" class="card-body" style="border-bottom: 1px solid #ebedf2 !important; ">
 						<label class="mb-2">Kerjakan Soal</label>
-						<a id="examPrePost" class="btn btn-info btn-border float-right mb-3">
+						<a id="examPrePost" href="javascript:void(0)" class="btn btn-info btn-border float-right mb-3">
 							Mulai!
 						</a>
 					</div>
