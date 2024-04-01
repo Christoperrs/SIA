@@ -8,8 +8,8 @@ class QuestionM extends CI_Model
     public function getPackages()
     {
         $query = $this->db->query(
-            "   SELECT  *
-                FROM    KMS_TRNPCK
+            "   SELECT  *, TRNHDR_TITLE
+                FROM    KMS_TRNPCK PCK inner join KMS_TRNHDR HDR on HDR.TRNHDR_ID = PCK.TRNHDR_ID
                 WHERE   TRNPCK_STATUS   = 1 "
         );
         return $query->result();
@@ -60,10 +60,10 @@ class QuestionM extends CI_Model
     public function getGlobalScore()
     {
         $query = $this->db->query(
-            "   SELECT  *, KMS_TRNPCK.TRNHDR_ID, KMS_TRNPCK.TRNPCK_NAME 
-                FROM    KMS_TRNACC
-                inner join  KMS_TRNPCK
-                    ON  KMS_TRNACC.TRNPCK_ID_PRE = KMS_TRNPCK.TRNPCK_ID
+            "   SELECT  *, KMS_TRNPCK.TRNHDR_ID, KMS_TRNPCK.TRNPCK_NAME , hdr.TRNHDR_TITLE as training_name
+            FROM    KMS_TRNACC
+            inner join  KMS_TRNPCK
+                ON  KMS_TRNACC.TRNPCK_ID_PRE = KMS_TRNPCK.TRNPCK_ID inner join KMS_TRNHDR hdr on hdr.TRNHDR_ID = KMS_TRNACC.TRNHDR_ID
            "
         );
         return $query->result();
@@ -155,7 +155,7 @@ class QuestionM extends CI_Model
     public function savePreExam($data, $npk, $idTraining)
     {
         $where = array(
-            'AWIEMP_NPK'=> $npk,
+            'AWIEMP_NPK' => $npk,
             'TRNHDR_ID' => $idTraining
         );
         return $this->db->update('KMS_TRNACC', $data, $where);

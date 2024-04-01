@@ -339,19 +339,16 @@
                     $combine = [
                         'npk' => $employee->NPK,
                         'nama' => $employee->NAMA,
-                        'training_id' => $a->TRNHDR_ID,
+                        'training_id' => $a->TRNHDR_TITLE,
                         'package_name' => $a->TRNPCK_NAME,
                         'scorePre' => $a->TRNACC_PRESCORE,
                         'scorePost' => $a->TRNACC_POSTSCORE,
                         'package_id' => $a->TRNPCK_ID_PRE
                     ];
                     $getData[] = $combine;
-                } else {
                 }
             }
-
             $data['score']   = $getData;
-
             $this->load->view('exam/score', $data);
         }
     }

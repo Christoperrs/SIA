@@ -27,6 +27,33 @@ ob_start();
             <div class="row" id="articlesContainer">
                 <?php $i = 1;
                 $j = 1;
+                $z = 0;
+                foreach ($forum as $t) {
+                    if ($t->FRM_STATUS >= 1) {
+                        $z++;
+                    }
+                }
+                if ($z == 0) { ?>
+                    <div class="col card-item fade-in">
+                        <div class="row justify-content-center">
+                            <div class="col-md-4">
+                                <div class="card" style="border-radius: 20px;">
+                                    <div class="card-header d-flex justify-content-center">
+                                        <img src="assets/img/dataEmpty1.jpg" style="max-height: 163px">
+                                    </div>
+                                    <div class="card-body d-flex justify-content-center">
+                                        <div class="row">
+                                            <div class="col">
+                                                <h4 class="card-title">Tidak ada artikel tersedia!</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php    }
                 foreach ($forum as $t) {
                     if (($this->session->userdata('role') != 'admin' && $t->FRM_STATUS == 2) || $this->session->userdata('role') == 'admin') { ?>
                         <div class="col-sm-3 card-item fade-in">

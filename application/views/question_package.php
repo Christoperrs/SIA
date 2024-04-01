@@ -57,7 +57,7 @@ ob_start();
 										<td><?php echo $i; ?></td>
 										<td><?php echo $e->TRNPCK_UNIQUEID; ?></td>
 										<td><?php echo $e->TRNPCK_NAME; ?></td>
-										<td><?php echo $e->TRNHDR_ID; ?></td>
+										<td><?php echo $e->TRNHDR_TITLE; ?></td>
 										<td>
 											<div class="d-flex justify-content-center">
 												<a href="javascript:void(0)" id="editBtn" onclick="showPForm(<?php echo $e->TRNPCK_ID; ?>)" class="btn btn-warning mr-2"><i class="la la-pencil" style="font-size: 16px;"></i></a>
