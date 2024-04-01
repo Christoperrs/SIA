@@ -7090,7 +7090,7 @@ body {
 
 .image-article {
   width: 100%;
-  height: 0;
+  height: auto;
   padding-top: 62.5%; /* 10/16 * 100 = 62.5% (16:10 aspect ratio) */
   position: relative;
   overflow: hidden;
@@ -7103,4 +7103,22 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover; /* Ensure the image covers the entire container */
+}
+
+.file-label {
+  position: absolute;
+  top: 39%;
+  left: 107px;
+  width: 200px;
+  /* height: 100%;
+  box-sizing: border-box; */
+  background-color: white;
+}
+
+.article-cover {
+  height: 0;
+  padding-top: 62.5%;
+  /* 16:10 aspect ratio (10/16 * 100) */
+  background-size: cover;
+  background-position: center;
 }

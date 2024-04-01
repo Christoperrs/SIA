@@ -30,9 +30,7 @@
 				<div class="container-fluid">
 					<div class="row justify-content-center" style="width: 100%; height: 100%;">
 						<div class="col-md-6 d-flex align-items-center justify-content-center">
-
-							<img src="assets/img/picLog.png" style="width: 80%">
-
+							<img src="<?php echo base_url('assets/img/picLog.png') ?>" style="width: 80%">
 						</div>
 						<div class="col-md-6 d-flex align-items-center justify-content-center">
 							<div class="card">

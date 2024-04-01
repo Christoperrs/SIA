@@ -33,7 +33,6 @@ class Article extends CI_Controller
         $npk =  $this->session->userdata('npk');
         $data['forum']   = $this->ForumM->getForum();
         $data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-
         $data['notif']        = $this->TrainingM->getNotif($npk);
         $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
 
@@ -44,10 +43,11 @@ class Article extends CI_Controller
     {
         if (!$this->isAllowed()) return redirect(site_url());
         print_r($this->input->post());
+        print_r($_FILES);
         $image_name = null;
-        if ($this->input->post('imgFRM')) {
+        if ($_FILES['imgFRM']['error'] != UPLOAD_ERR_NO_FILE) {
             $config['upload_path']          = './uploads/';
-            $config['allowed_types']        = 'gif|jpg|png';
+            $config['allowed_types']        = 'gif|jpg|jpeg|png|bmp|svg|webp';
             $config['max_size']             = 3000;
 
             $this->load->library('upload', $config);
@@ -92,6 +92,11 @@ class Article extends CI_Controller
         redirect(site_url('Article'));
     }
 
+    public function searchArticles()
+    {
+        echo json_encode($this->ForumM->searchArticles());
+    }
+
     public function isAllowed()
     {
         return $this->session->userdata('isLogin');
@@ -100,12 +105,19 @@ class Article extends CI_Controller
     public function modifyFRM()
     {
         $image_name = null;
-        print_r($this->input->post());
-        if ($this->input->post('imgFRM')) {
-            $existing_image = $this->ForumM->detailFRM($this->input->post('forum_id'))->FRM_IMAGE; // Assuming you have a method to get the image filename based on forum ID
+        $existing_image = $this->ForumM->detailFRM($this->input->post('idFRM'))->FRM_IMAGE;
 
+        if ($_FILES['imgFRM']['error'] == UPLOAD_ERR_NO_FILE) {
+            echo $existing_image . ' - ' . $this->input->post('imgTXTInput');
+            if ($existing_image != $this->input->post('imgTXTInput') && !empty($existing_image)) {
+                $upload_path = './uploads/';
+                if (file_exists($upload_path . $existing_image)) {
+                    unlink($upload_path . $existing_image);
+                }
+                $image_name = null;
+            }
+        } else {
             if (!empty($existing_image)) {
-                // Delete the existing image file
                 $upload_path = './uploads/';
                 if (file_exists($upload_path . $existing_image)) {
                     unlink($upload_path . $existing_image);
@@ -124,10 +136,10 @@ class Article extends CI_Controller
                 return;
             }
 
-            // Image uploaded successfully, get the file name
             $upload_data = $this->upload->data();
             $image_name = $upload_data['file_name'];
         }
+
         $idFRM = $this->input->post('idFRM');
         $data = array(
             'FRM_TITLE' =>  $this->input->post('titleFRM'),
@@ -136,12 +148,12 @@ class Article extends CI_Controller
             'FRM_MODIDATE'             => date('Y/m/d H:i:s'),
             'FRM_MODIBY'               => $this->session->userdata('npk')
         );
-        if ($this->input->post('imgFRM')) $data['FRM_IMAGE'] = $image_name;
+        if ($_FILES['imgFRM']['error'] != UPLOAD_ERR_NO_FILE || ($_FILES['imgFRM']['error'] == UPLOAD_ERR_NO_FILE && $existing_image != $this->input->post('imgTXTInput'))) $data['FRM_IMAGE'] = $image_name;
 
         // Call the model function to save the data
         $saved = $this->ForumM->modifyFRM($data, $idFRM);
 
-        // redirect(site_url('Article'));
+        redirect(site_url('Article'));
     }
 
     public function publishFRM($id)

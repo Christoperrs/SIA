@@ -2,22 +2,38 @@
 
 class ForumM extends CI_Model
 {
-
-
-
     public function getForum()
     {
         $query = $this->db->query(
             "   SELECT  *
                 FROM    KMS_FRM
-                WHERE   FRM_STATUS >= 1 "
+                WHERE   FRM_STATUS >= 1 
+                ORDER BY    FRM_STATUS DESC, FRM_TITLE"
         );
         return $query->result();
+    }
+
+    public function isAdmin()
+    {
+        return $this->session->userdata('role') == 'admin';
     }
 
     public function saveFRM($data)
     {
         return $this->db->insert('KMS_FRM', $data);
+    }
+
+    public function searchArticles()
+    {
+        $key    = $this->input->post('keyword');
+        $status = $this->isAdmin() ? '> 0' : '= 2';
+        $query = $this->db->query(
+            "   SELECT  *
+                FROM    KMS_FRM
+                WHERE   LOWER(FRM_TITLE) LIKE '%$key%' AND FRM_STATUS " . $status . "
+                ORDER BY    FRM_STATUS DESC, FRM_TITLE"
+        );
+        return $query->result();
     }
 
     public function deleteFRM($data, $where)

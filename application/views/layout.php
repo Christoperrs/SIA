@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="<?php echo base_url('assets/css/ready.css') ?>">
 	<link rel="stylesheet" href="<?php echo base_url('assets/css/demo.css') ?>">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css') ?>">
+	<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css') ?>">
 
 </head>
@@ -270,6 +271,7 @@ function isActive($url)
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js') ?>"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js') ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
 <script>
 	function confirmLogout() {
