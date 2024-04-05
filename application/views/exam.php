@@ -32,7 +32,7 @@ function isActive($url)
     <div class="wrapper">
         <div class="main-header">
             <div class="logo-header">
-                <a href="index.html" class="logo">
+                <a href="<?php echo base_url('Training') ?>" class="logo">
                     Sistem Informasi Training
                 </a>
                 <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
@@ -183,6 +183,7 @@ function isActive($url)
                                     <?php
                                     } ?>
                                     <div class="card-body" style="border-bottom: 1px solid #ebedf2 !important;">
+
                                         <?php
                                         $i = 1;
                                         $section = 1;
@@ -201,7 +202,7 @@ function isActive($url)
                                                         <label><?php echo ($i) . '. ' . $t->TRNQUE_QUESTION ?> <span style="color: red;">*</span></label><br />
                                                         <div class="row">
                                                             <label class="form-radio-label ml-3">
-                                                                <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="A">
+                                                                <input class="form-radio-input" type="radio" name="answer<?php echo $i ?>" id="answer<?php echo $i ?>" value="A" onclick="updateNumbNavBtn(<?php echo $i ?>)">
                                                                 <span class=" form-radio-sign">A. <?php echo $t->TRNQUE_AOPT ?></span>
                                                             </label>
                                                         </div>
@@ -358,7 +359,7 @@ function isActive($url)
 
                 });
             </script>
-            <?php include __DIR__ . '/script2.php'; ?>
+            <?php include __DIR__ . '/script.php'; ?>
             <?php
 
             ?>

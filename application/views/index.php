@@ -26,7 +26,7 @@
 			<?php endif; ?>
 		</script>
 		<div class="main-panel" style="width: 100%">
-			<div class="content" style="position: fixed;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;background:  url('assets/img/bgLog.png') center/cover no-repeat;">
+			<div class="content m-0" style="position: fixed;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;background:  url('assets/img/bgLog.png') center/cover no-repeat;">
 				<div class="container-fluid">
 					<div class="row justify-content-center" style="width: 100%; height: 100%;">
 						<div class="col-md-6 d-flex align-items-center justify-content-center">

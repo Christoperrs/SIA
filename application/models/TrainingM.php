@@ -373,7 +373,13 @@ class TrainingM extends CI_Model
                 WHERE   TRNHDR_ID = $id
                 AND     AWIEMP_NPK = '$npk'                  "
         );
-        return $query->row();
+        if ($query->num_rows() > 0) {
+            // If there are rows, return the result
+            return $query->row();
+        } else {
+            // If there are no rows, return an object with TRNACC_RESUME set to null
+            return (object) array('TRNACC_RESUME' => null);
+        }
     }
 
     public function getProgress($id, $npk)
@@ -494,16 +500,28 @@ class TrainingM extends CI_Model
         return $query->result();
     }
 
+    public function getNotifRejectApproveFPET($npk)
+    {
+        $query = $this->db->query(
+            "SELECT  *
+            FROM    KMS_FPETFM
+            WHERE   (FPETFM_HRAPPROVED = '3'
+            OR     FPETFM_APPROVED = '3')  
+            AND     FPETFM_CREABY = $npk AND  FPETFM_STATUS != '0'                        "
+        );
+        return $query->result();
+    }
+
     public function removeNotif($id, $npk)
     {
         $data = array(
-            'TRNACC_PERMISSION'        => 0,
-            'modified_by'   => $this->session->userdata('npk'),
-            'modified_date' => date('Y/m/d H:i:s'),
+            'TRNACC_PERMISSION' => 0,
+            'TRNACC_MODIBY'     => $this->session->userdata('npk'),
+            'TRNACC_MODIDATE'   => date('Y/m/d H:i:s'),
         );
         $where = array(
             'TRNHDR_ID'    => $id,
-            'npk' => $npk
+            'AWIEMP_NPK' => $npk
         );
 
         return $this->db->update($this->t_access, $data, $where);
@@ -512,26 +530,35 @@ class TrainingM extends CI_Model
     public function removeNotifMateri($id)
     {
         $data = array(
-            'status'        => 0,
-
-            'modified_by'   => $this->session->userdata('npk'),
-            'modified_date' => date('Y/m/d H:i:s'),
+            'TRNSUB_STATUS'        => 0,
+            'TRNSUB_MODIBY'   => $this->session->userdata('npk'),
+            'TRNSUB_MODIDATE' => date('Y/m/d H:i:s'),
         );
         $where = array(
-            'id_training_detail'    => $id
+            'TRNSUB_ID'    => $id
         );
 
         return $this->db->update($this->t_detail, $data, $where);
     }
 
-    public function checkStatusTrain($id)
+    public function removeNotifFPET($id, $code)
     {
-        $query = $this->db->query(
-            "   
-            select status from KMS_TRNHDR where TRNHDR_ID = " . $id
+        $data = array(
+            'FPETFM_MODIBY'   => $this->session->userdata('npk'),
+            'FPETFM_MODIDATE' => date('Y/m/d H:i:s'),
         );
 
-        return $query->result();
+        if ($code == 1) {
+            $data['FPETFM_APPROVED'] = 0;
+        } else if ($code == 2) {
+            $data['FPETFM_HRAPPROVED'] = 0;
+        }
+
+        $where = array(
+            'FPETFM_ID' => $id
+        );
+
+        return $this->db->update("KMS_FPETFM", $data, $where);
     }
 
     public function checkPretest($npk, $id)

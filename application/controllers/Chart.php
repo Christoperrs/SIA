@@ -44,7 +44,8 @@ class Chart extends CI_Controller
 		$npk = $this->session->userdata('npk');
 		$data['notif']   = $this->TrainingM->getNotif($npk);
 		$data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
+		$data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
 		$data['getTrendAccess']   = $this->ChartM->getTrendAccess();
 		$this->load->view('training/training_chart', $data);
 	}

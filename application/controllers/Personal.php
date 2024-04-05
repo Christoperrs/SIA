@@ -35,7 +35,8 @@ class Personal extends CI_Controller
 		$data['getNotOpenTrain']   		= $this->ChartM->getNotDoneEmployee();
 		$data['notif']					= $this->TrainingM->getNotif($npk);
 		$data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);;
+		$data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
 
 		$this->load->view('training/training_me', $data);
 	}
@@ -55,7 +56,8 @@ class Personal extends CI_Controller
 		$data['evaluator']	= $this->OracleDBM->getEmpByNPK($data['overview']->FPETFM_CREABY);
 		$data['notif']		= $this->TrainingM->getNotif($npk);
 		$data['notifMateri'] = $this->TrainingM->getNotifMateri($npk);
-		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);;
+		$data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
 		echo json_encode($data);
 	}
 
@@ -79,7 +81,8 @@ class Personal extends CI_Controller
 		$data['resumes']   	= $getHighest;
 		$data['notif']		= $this->TrainingM->getNotif($npk);
 		$data['notifMateri'] = $this->TrainingM->getNotifMateri($npk);
-		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);;
+		$data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
 
 		$this->load->view('resume', $data);
 	}

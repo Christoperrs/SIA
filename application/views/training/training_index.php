@@ -28,12 +28,12 @@ $combinedDataJSON = json_encode($combinedData);
 				<div class="card p-2 mb-3">
 					<div class="card-header">
 						<div class="row">
-							<div class="col">
+							<div class="col pr-0">
 								<h4 class="card-title">Daftar Training</h4>
 								<p class="card-category">Training</p>
 							</div>
 							<?php if ($this->session->userdata['role'] == 'admin') { ?>
-								<div class="col d-flex align-items-center justify-content-end">
+								<div class="col-auto d-flex align-items-center justify-content-end">
 									<a href="javascript:void(0)" onclick="changeForm('tambah')" class="btn btn-primary"> Tambah</a>
 								</div>
 							<?php } ?>
@@ -41,9 +41,11 @@ $combinedDataJSON = json_encode($combinedData);
 					</div>
 					<div class="card-body">
 						<div class="row py-2">
-							<div class="col-md-4 d-flex mb-3 align-items-center pr-0 justify content-between">
-								<label for="search_keyword">Filter Tag:&nbsp;&nbsp;</label>
-								<div class="col">
+							<div class="col-md-<?php echo $this->session->userdata('role') == 'admin' ? 4 : 6 ?> d-flex mb-3 align-items-center pr-0">
+								<div class="col p-0">
+									<label for="search_keyword">Filter Label:&nbsp;&nbsp;</label>
+								</div>
+								<div class="col-sm-9">
 									<button class="btn btn-primary dropdown-toggle" type="button" name="" id="ddTags" style="width: 100%; text-align: start;" data-toggle="dropdown" aria-expanded="false">
 										ALL
 									</button>
@@ -55,20 +57,22 @@ $combinedDataJSON = json_encode($combinedData);
 									</ul>
 								</div>
 							</div>
-							<div class="col-md-5 pl-5 pr-0">
-								<div class="form-group form-inline p-0">
+							<div class="col-md-<?php echo $this->session->userdata('role') == 'admin' ? 4 : 6 ?> d-flex mb-3 align-items-center pr-0">
+								<div class="col p-0">
 									<label for="search_training">Search:&nbsp;&nbsp;</label>
-									<div class="col p-0">
-										<input type="text" class="form-control input-full" id="search_training" name="search_training" style="width: 100%;" onkeyup="searchByKey(this)">
-									</div>
+								</div>
+								<div class="col-sm-9">
+									<input type="text" class="form-control input-full" id="search_training" name="search_training" style="width: 100%;" onkeyup="searchByKey(this)">
 								</div>
 							</div>
-							<div class="col-md-3 pl-0">
-								<label class="form-radio-label mb-3 float-right">
-									<span class="form-radio-sign">My Training: &nbsp;&nbsp;</span>
-									<input type="checkbox" data-toggle="toggle" data-onstyle="info" data-style="btn-round" name="optionsRadiosA" value="" id="myTraining" onchange="toggleMine(this.checked);">
-								</label>
-							</div>
+							<?php if ($this->session->userdata('role') == 'admin') { ?>
+								<div class="col-md-4 d-flex align-items-center justify-content-end">
+									<label class="form-radio-label mb-3 float-right">
+										<span class="form-radio-sign">My Training: &nbsp;&nbsp;</span>
+										<input type="checkbox" data-toggle="toggle" data-onstyle="info" data-style="btn-round" name="optionsRadiosA" value="" id="myTraining" onchange="toggleMine(this.checked);">
+									</label>
+								</div>
+							<?php } ?>
 						</div>
 					</div>
 				</div>
@@ -88,7 +92,7 @@ $combinedDataJSON = json_encode($combinedData);
 							<a id="draftTab" class="nav-link" href="javascript:void(0)" onclick="toggleTab('draft')">Draft</a>
 						</li>
 						<li class="nav-item">
-							<a id="allWithRequestTab" class="nav-link" href="javascript:void(0)" onclick="toggleTab('allWithRequest')">Published with Request</a>
+							<a id="allWithRequestTab" class="nav-link" href="javascript:void(0)" onclick="toggleTab('allWithRequest')">Request</a>
 						</li>
 					</ul>
 				</div>
@@ -126,10 +130,9 @@ $combinedDataJSON = json_encode($combinedData);
 			<?php	}
 			foreach ($training as $t) { ?>
 				<div class="col-sm-3 card-item <?php echo $i <= 4 ? 'fade-in' : 'fade-out' ?>">
-
-					<div class="card" style="border-radius: 20px;">
-						<div class="card-header">
-							<img src="assets/img/picLog.png" style="width: 100%">
+					<div class="card card-flip" onclick="showDetail(<?php echo $t->TRNHDR_ID ?>)" style="border-radius: 20px;">
+						<div class="card-header remove-border-bottom">
+							<img src="assets/img/picLog.png" class="img-fluid mobile-image" style="width: 100%">
 							<div class="row overlay-content" style="width: 100%">
 								<div class="col-sm-6">
 									<?php if ($t->TRNHDR_STATUS == 2) { ?>
@@ -152,13 +155,10 @@ $combinedDataJSON = json_encode($combinedData);
 						</div>
 						<div class="card-body">
 							<div class="row">
-								<div class="col-sm-8 pr-0">
-									<h4 class="card-title"><?php echo (strlen($t->TRNHDR_TITLE) > 15) ? substr($t->TRNHDR_TITLE, 0, 15) . '...' : $t->TRNHDR_TITLE; ?></h4>
+								<div class="col">
+									<h4 class="card-title forum-class"><?php echo $t->TRNHDR_TITLE ?></h4>
 									<p class="card-category"><i class="la la-file-pdf-o"></i>&ensp;<?php echo $t->detail_count ?> materi</p>
 									<p class="card-category"><i class="la la-users"></i>&ensp;<?php echo $t->participant_count ?> partisipan</p>
-								</div>
-								<div class="col d-flex align-items-center justify-content-end p-0 pr-3">
-									<a href="javascript:void(0)" onclick="showDetail(<?php echo $t->TRNHDR_ID ?>)" class="btn btn-primary px-2"><i class="la la-bars" style="font-size: 16px;"></i> Detail</a>
 								</div>
 							</div>
 						</div>
@@ -177,61 +177,76 @@ $combinedDataJSON = json_encode($combinedData);
 				}
 			}
 			if ($z == 0) { ?>
-				<div class="col align-items-center justify-content-center d-flex">
-					<ul class="pagination pg-primary">
-						<li class="page-item">
-							<a class="page-link" href="#" aria-label="Previous">
-								<span aria-hidden="true">«</span>
-								<span class="sr-only">Previous</span>
-							</a>
-						</li>
-						<li class="page-item">
-							<a class="page-link" href="#" aria-label="Next">
-								<span aria-hidden="true">»</span>
-								<span class="sr-only">Next</span>
-							</a>
-						</li>
-					</ul>
-				</div>
-
-				<?php	} else {
+			<div class="col align-items-center justify-content-center d-flex">
+				<ul class="pagination pg-primary">
+					<li class="page-item">
+						<a class="page-link" href="#" aria-label="Previous">
+							<span aria-hidden="true">«</span>
+							<span class="sr-only">Previous</span>
+						</a>
+					</li>
+					<li class="page-item">
+						<a class="page-link" href="#" aria-label="Next">
+							<span aria-hidden="true">»</span>
+							<span class="sr-only">Next</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<?php } else {
 				foreach ($training as $t) {
 					if ($k == 1) { ?>
-						<div class="col align-items-center justify-content-center d-flex">
-							<ul class="pagination pg-primary">
-								<li class="page-item">
-									<a class="page-link" href="#" aria-label="Previous">
-										<span aria-hidden="true">«</span>
-										<span class="sr-only">Previous</span>
-									</a>
-								</li>
-							<?php }
-						if ($k % 4 == 1) { ?>
-								<script>
-									console.log(<?php echo $k ?>)
-								</script>
-								<li class="page-item" data-page="<?php echo $l ?>"><a class="page-link" href="javascript:void(0)" onclick="showPage(<?php echo $l ?>)"><?php echo $l ?></a></li>
+			<div class="col align-items-center justify-content-center d-flex">
+				<ul class="pagination pg-primary">
+					<li class="page-item">
+						<a class="page-link" href="#" aria-label="Previous">
+							<span aria-hidden="true">«</span>
+							<span class="sr-only">Previous</span>
+						</a>
+					</li>
+					<?php }
+					if ($k % 4 == 1) { ?>
+					<script>
+						console.log(<?php echo $k ?>)
+					</script>
+					<li class="page-item" data-page="<?php echo $l ?>"><a class="page-link" href="javascript:void(0)" onclick="showPage(<?php echo $l ?>)"><?php echo $l ?></a></li>
 						<?php $l++;
-						}
-						$k++;
-					} ?>
-						<li class="page-item">
-							<a class="page-link" href="#" aria-label="Next">
-								<span aria-hidden="true">»</span>
-								<span class="sr-only">Next</span>
-							</a>
-						</li>
-							</ul>
-						</div>
-					<?php } ?>
+					}
+					$k++;
+				} ?>
+					<li class="page-item">
+						<a class="page-link" href="#" aria-label="Next">
+							<span aria-hidden="true">»</span>
+							<span class="sr-only">Next</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<?php } ?>
 		</div>
 	</div>
-	<div id="pdfModal" class="modal">
-		<div class="modal-content">
-			<span class="close">&times;</span>
-			<div class="iframe-container">
-				<iframe id="pdfViewer" width="100%" height="500px" class="pdf-iframe">></iframe>
-				<div class="overlay"></div>
+	<div class="modal" id="pdfModal" tabindex="-1" aria-labelledby="pdfModal" aria-hidden="true" style="overflow: visible;">
+		<div class="modal-dialog" style="max-width: 1000px;">
+			<div class="modal-content" style="width: 1000px; ">
+				<div class="card p-2 mb-0">
+					<div class="card-header">
+						<div class="row">
+							<div class="col">
+								<h4 class="card-title">Materi </h4>
+								<p class="card-category" id="addLabelMateri"></p>
+							</div>
+							<div class="col d-flex justify-content-end">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+						</div>
+					</div>
+					<div class="modal-body">
+						<div class="iframe-container">
+							<iframe id="pdfViewer" width="100%" height="550px" class="pdf-iframe"></iframe>
+							<div class="overlay"></div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -271,7 +286,7 @@ $combinedDataJSON = json_encode($combinedData);
 								<input type="text" class="form-control input-pill mb-3" name="pemateri" id="pemateri" placeholder="Masukkan Pemateri" onkeydown="restrictInput(event)">
 							</div>
 							<div class="col">
-								<label class="my-2">Tags</label><br />
+								<label class="my-2">Label</label><br />
 								<div id="tagsContainer">
 									<?php $i = 1;
 									function isColorLight($hexColor)
@@ -679,7 +694,7 @@ $combinedDataJSON = json_encode($combinedData);
 </script>
 
 
-<?php include __DIR__ . '/../script2.php'; ?>
+<?php include __DIR__ . '/../script.php'; ?>
 <?php
 /* Store the content of the buffer for later use */
 $contentPlaceHolder = ob_get_contents();

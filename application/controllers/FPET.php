@@ -28,19 +28,21 @@ class FPET extends CI_Controller
         $data['notif']        = $this->TrainingM->getNotif($npk);
         $data['tags']          = $this->AdminM->getTags();
         $data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
-        //       $data['fpet']          = $this->FPETM->getFpet();
-        $getFpetDataEmployee2    = $this->FPETM->getFpet();
+        $data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
+        $getFpetDataEmployee2    = $this->FPETM->getApprovedFpet($npk);
         $getFpetData = [];
         foreach ($getFpetDataEmployee2 as $a) {
             $employee   = $this->OracleDBM->getEmpByNPK($a->AWIEMP_NPK);
             $combine = [
-                'npk'       => $employee->NPK,
-                'nama'      => $employee->NAMA,
-                'target'      => $a->FPETFM_TARGET,
-                'idFpet'      => $a->FPETFM_ID,
-                'statusApproved'  => $a->FPETFM_APPROVED,  // Corrected key
-                'statusApprovedHr' => $a->FPETFM_HRAPPROVED,  // Corrected key
+                'npk'               => $employee->NPK,
+                'nama'              => $employee->NAMA,
+                'trainsuggest'      => $a->FPETFM_TRAINSUGGEST,
+                'idFpet'            => $a->FPETFM_ID,
+                'statusApproved'    => $a->FPETFM_APPROVED,
+                'statusApprovedHr'  => $a->FPETFM_HRAPPROVED,
+                'status'            => $a->FPETFM_STATUS,
+                'role'              => $a->role,
             ];
             $getFpetData[] = $combine;
         }
@@ -50,43 +52,10 @@ class FPET extends CI_Controller
         $this->load->view('fpet/masterFpet', $data);
     }
 
-    public function approvalMenu()
-    {
-        if (!$this->isAllowed()) return redirect(site_url());
-        $npk = $this->session->userdata('npk');
-        $data['training']   = $this->TrainingM->searchTraining(true, '', '');
-        $data['substance']  = $this->TrainingM->getAllSubstances();
-        $data['employee']   = $this->OracleDBM->getAllEmp();
-        $data['dept']       = $this->OracleDBM->getAllDept();
-        $data['notif']        = $this->TrainingM->getNotif($npk);
-        $data['tags']          = $this->AdminM->getTags();
-        $data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
-
-        $getFpetDataEmployee2    = $this->FPETM->getApprovedFpet($npk);
-        $getFpetData = [];
-        foreach ($getFpetDataEmployee2 as $a) {
-            $employee   = $this->OracleDBM->getEmpByNPK($a->AWIEMP_NPK);
-            $combine = [
-                'npk'       => $employee->NPK,
-                'nama'      => $employee->NAMA,
-                'target'      => $a->FPETFM_TARGET,
-                'idFpet'      => $a->FPETFM_ID,
-                'statusApproved'  => $a->FPETFM_APPROVED,
-                'statusApprovedHr' => $a->FPETFM_HRAPPROVED,
-            ];
-            $getFpetData[] = $combine;
-        }
-        $data['fpet']   = $getFpetData;
-        $this->load->view('fpet/approvalFpet', $data);
-    }
-
     public function isAllowed()
     {
         return $this->session->userdata('isLogin');
     }
-
-
 
     public function saveFpet()
     {
@@ -101,11 +70,7 @@ class FPET extends CI_Controller
         $notes = $this->input->post('notes');
         $rActual = $this->input->post('rActual');
         $rTarget = $this->input->post('rTarget');
-        $rEval = $this->input->post('rEval');
-        // Assuming you want to save this data to the database
-        // Load the model if not already loaded
-        $this->load->model('FPETM');
-        // Prepare data to be saved
+
         $data = array(
             'FPETFM_TRAINSUGGEST' =>  $this->input->post('trainSuggest'),
             'FPETFM_APPROVER' => $approved,
@@ -115,12 +80,12 @@ class FPET extends CI_Controller
             'FPETFM_TARGET' => $target,
             'FPETFM_EVAL' => $eval,
             'FPETFM_NOTES' => $notes,
-            'FPETFM_STATUS' => 2,
+            'FPETFM_STATUS' => 1,
             'FPETFM_PACTUAL' => $rActual, // Add rActual to the data array
             'FPETFM_PTARGET' => $rTarget, // Add rTarget to the data array
             'FPETFM_PEVAL' => 0,
-            'FPETFM_APPROVED' => 2,
-            'FPETFM_HRAPPROVED' => 2,
+            'FPETFM_APPROVED' => 1,
+            'FPETFM_HRAPPROVED' => 1,
             'FPETFM_CREADATE'              => date('Y/m/d H:i:s'),
             'FPETFM_CREABY'                => $this->session->userdata('npk')
         );
@@ -134,22 +99,6 @@ class FPET extends CI_Controller
     {
         $data["dataFpet"] = $this->FPETM->detailFpet($id);
         echo json_encode($data);
-    }
-    public function removeNotif()
-    {
-        $id = $this->input->post('id');
-        $npk = $this->input->post('npk');
-        echo "<script>console.log('aa + $id' + $npk);</script>";
-        $this->TrainingM->removeNotif($id, $npk);
-        echo json_encode(['status' => 'success', 'message' => 'Notification removed successfully.']);
-    }
-
-    public function removeFpet($id)
-    {
-
-        if (!$this->isAllowed()) return redirect(site_url());
-        $this->FPETM->removeFpet($id);
-        redirect(site_url('FPET'));
     }
 
     // public function rejectFpet($id)
@@ -167,17 +116,17 @@ class FPET extends CI_Controller
     //     redirect(site_url('FPET/approvalMenu'));
     // }
 
-    public function rejectApproveFpet($code, $id)
-    {
+    public function rejectApproveFpet($code, $id) {
         if (!$this->isAllowed()) return redirect(site_url());
-        if ($code == 1) {
+        if ($code == 2) {
             $this->FPETM->rejectApproveFpet($id, $code);
-        } elseif ($code == 0) {
+        } else if ($code == 3) {
+            print_r($id, $code);
             $this->FPETM->rejectApproveFpet($id, $code);
-        } elseif ($code == 3) {
-            $this->FPETM->rejectApproveHrFpet($id, 0);
+        } else if ($code == 4) {
+            $this->FPETM->rejectApproveHrFpet($id, 3);
         }
-        redirect(site_url('FPET/approvalMenu'));
+        redirect('FPET');
     }
 
 
@@ -229,22 +178,17 @@ class FPET extends CI_Controller
             $lastInsertedId = $this->db->insert_id();
         }
         print_r($lastInsertedId);
-        $data3 = array(
-            'AWIEMP_NPK' => $participant,
-            'TRNHDR_ID' => $lastInsertedId,
-            'TRNACC_PERMISSION' => 1,
-        );
-        $this->FPETM->addParticipantTraining($data3);
+        $this->FPETM->addParticipantTraining($participant, $lastInsertedId);
 
 
-        $this->FPETM->rejectApproveHrFpet($id, 1, $lastInsertedId, $rEstablished);
-        redirect(site_url('FPET/approvalMenu'));
+        $this->FPETM->rejectApproveHrFpet($id, 2, $lastInsertedId, $rEstablished);
+        redirect(site_url('FPET'));
     }
 
-    public function publishFpet($id)
+    public function confirmPublishDeleteFPET($code, $id)
     {
         if (!$this->isAllowed()) return redirect(site_url());
-        $this->FPETM->publishFpet($id);
+        $this->FPETM->confirmPublishDeleteFPET($code, $id);
         redirect(site_url('FPET'));
     }
     public function checkParticipant()
@@ -283,12 +227,12 @@ class FPET extends CI_Controller
             'FPETFM_TARGET' => $target,
             'FPETFM_EVAL' => $eval,
             'FPETFM_NOTES' => $notes,
-            'FPETFM_STATUS' => 2,
+            'FPETFM_STATUS' => 1,
             'FPETFM_PACTUAL' => $rActual, // Add rActual to the data array
             'FPETFM_PTARGET' => $rTarget, // Add rTarget to the data array
             'FPETFM_PEVAL' => 0,
-            'FPETFM_APPROVED' => 2,
-            'FPETFM_HRAPPROVED' => 2,
+            'FPETFM_APPROVED' => 1,
+            'FPETFM_HRAPPROVED' => 1,
             'FPETFM_MODIDATE'             => date('Y/m/d H:i:s'),
             'FPETFM_MODIBY'               => $this->session->userdata('npk')
         );
@@ -297,17 +241,5 @@ class FPET extends CI_Controller
         $saved = $this->FPETM->modifyFpet($data, $idFpet);
 
         redirect(site_url('FPET'));
-    }
-
-
-    public function removeNotifMateri($id)
-    {
-        // Log a message to the CodeIgniter log file
-        log_message('info', 'Notification removed successfully. ID: ' . $id);
-        if (!$this->session->userdata('isLogin')) {
-            return redirect('Login');
-        } else {
-            $this->TrainingM->removeNotifMateri($id);
-        }
     }
 }

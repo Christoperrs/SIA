@@ -20,14 +20,15 @@ class Training extends CI_Controller
 	{
 		if (!$this->isAllowed()) return redirect(site_url());
 		$npk = $this->session->userdata('npk');
-		$data['training']   = $this->TrainingM->searchTraining(true, '', '');
+		$data['training'] = $this->TrainingM->searchTraining($this->TrainingM->isAdmin(), '', '');
 		$data['substance']  = $this->TrainingM->getAllSubstances();
 		$data['employee']   = $this->OracleDBM->getAllEmp();
 		$data['dept']       = $this->OracleDBM->getAllDept();
 		$data['notif']		= $this->TrainingM->getNotif($npk);
 		$data['tags']  		= $this->AdminM->getTags();
 		$data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
+		$data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+		$data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
 		$this->load->view('training/training_index', $data);
 	}
 
@@ -91,17 +92,7 @@ class Training extends CI_Controller
 				$count++;
 			}
 		}
-		// foreach ($this->input->post() as $key => $value) {
-		// 	if (strpos($key, 'materiTitle') !== false && $this->input->post('materiFile' . substr($key, 10)) !== null) {
-		// 		$count++;
-		// 	} else if(strpos($key, 'materiTitle') !== false){
-		// 		$count++;
-		// 	}else if($this->input->post('materiFile' . substr($key, 10)) !== null){
-		// 		$count++;
-		// 	}
-		// }
-
-		// Saving each substance
+		
 		for ($i = 1; $i <= $count; $i++) {
 			$judulMateri = $this->input->post('materiTitle' . $i);
 

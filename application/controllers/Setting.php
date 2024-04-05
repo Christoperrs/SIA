@@ -20,7 +20,8 @@ class Setting extends CI_Controller
         $npk = $this->session->userdata('npk');
         $data['notif']      = $this->TrainingM->getNotif($npk);
         $data['notifMateri']= $this->TrainingM->getNotifMateri($npk);
-        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
+        $data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
         $data['settings']   = $this->SettingM->getSettings();
         $data['employee']   = $this->OracleDBM->getAllEmp();
         $this->load->view('setting_view', $data);

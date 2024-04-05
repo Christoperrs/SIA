@@ -121,9 +121,24 @@ ob_start();
   </div>
   <div class="col-md-5">
     <div class="card">
+      <?php $count = 0;
+      foreach ($getCountMyDonePercent as $e) {
+        $count++;
+      }
+      if ($count == 0) {  ?>
+        <div class="card-body">
+          <ul class="p-0 m-0" style="max-height: 22 0px">
+            <div class="avatar flex-shrink-0 me-3 justify-content-center d-flex">
+              <img src="https://192.171.71.51/prior/SIA/assets/img/dataEmpty1.jpg" alt="User" class="img-fluid" style="max-width: 310px; max-height: 170px;">
+            </div>
+            <hr>
+            <h6 style="text-align: center;">Grafik Belum Tersedia</h6>
+          </ul>
+        </div>
+      <?php
+      }
+      foreach ($getCountMyDonePercent as $e) { ?>
       <div class="card-body" style="overflow-y: scroll;">
-
-        <?php foreach ($getCountMyDonePercent as $e) { ?>
           <div class="progress-card">
             <div class="d-flex justify-content-between mb-1">
               <span class="text-muted"><?php echo $e->TRNHDR_TITLE; ?></span>
@@ -272,7 +287,7 @@ ob_start();
 </script>
 
 
-<?php include __DIR__ . '/../script2.php'; ?>
+<?php include __DIR__ . '/../script.php'; ?>
 <?php
 /* Store the content of the buffer for later use */
 $contentPlaceHolder = ob_get_contents();

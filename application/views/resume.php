@@ -17,8 +17,8 @@ ob_start();
                 <div class="card-header">
                     <div class="row">
                         <div class="col">
-                            <h4 class="card-title">Resume Training</h4>
-                            <p class="card-category">Hasil Resume Karyawan</p>
+                            <h4 class="card-title">Daftar Hasil Training</h4>
+                            <p class="card-category">Evaluasi Training</p>
                         </div>
                     </div>
                 </div>
@@ -48,21 +48,21 @@ ob_start();
                                     <th scope="col" style="width: 50px;">No.</th>
                                     <th scope="col" onclick="sortResume(1)">Nama Training</th>
                                     <th scope="col" onclick="sortResume(2)">Nama Karyawan</th>
-                                    <th scope="col" style="width: 135px;" class="text-center">Aksi</th>
+                                    <!-- <th scope="col" style="width: 135px;" class="text-center">Aksi</th> -->
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php $i = 1;
                                 foreach ($resumes as $e) { ?>
-                                    <tr>
+                                    <tr onclick="getOverview(<?php echo $e['TRNHDR_ID']; ?>, <?php echo $e['NPK']; ?>)" style="cursor: pointer;">
                                         <td><?php echo $i; ?></td>
                                         <td><?php echo $e['TRNHDR_TITLE']; ?></td>
                                         <td><?php echo $e['NAMA']; ?></td>
-                                        <td>
+                                        <!-- <td>
                                             <div class="d-flex justify-content-center">
-                                                <a href="javascript:void(0)" id="editBtn" onclick="getOverview(<?php echo $e['TRNHDR_ID']; ?>, <?php echo $e['NPK']; ?>)" class="btn btn-warning mr-2"><i class="la la-pencil" style="font-size: 16px;"></i></a>
+                                                <a href="javascript:void(0)" id="editBtn" class="btn btn-warning mr-2"><i class="la la-pencil" style="font-size: 16px;"></i></a>
                                             </div>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 <?php $i++;
                                 } ?>
@@ -203,7 +203,7 @@ ob_start();
                                                     <span id="percentageValue" class="text-muted fw-bold"></span>
                                                 </div>
                                                 <div id="rangeContainer">
-                                                    <input type="range" id="FPETFM_PEVAL" name="FPETFM_PEVAL" class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuemin="0" aria-valuemax="100" data-original-title="0%">
+                                                    <input type="range" id="FPETFM_PEVAL" name="FPETFM_PEVAL" class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuemin="0" aria-valuemax="100" data-original-title="0%" step="25">
                                                 </div>
                                             </div>
                                         </div>
@@ -538,5 +538,5 @@ $contentPlaceHolder = ob_get_contents();
 ob_end_clean();
 /* Call the master page. It will echo the content of the placeholders in the designated locations */
 include __DIR__ . "/layout.php";
-include __DIR__ . "/script2.php";
+include __DIR__ . "/script.php";
 ?>

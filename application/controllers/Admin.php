@@ -37,7 +37,8 @@ class Admin extends CI_Controller
         $data['notif']      = $this->TrainingM->getNotif($npk);
 
         $data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
+        $data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
         foreach ($data['employee'] as &$employee) {
             $employee->isAdmin = $this->AdminM->isNpkAdmin($employee->NPK);
         }
@@ -64,12 +65,21 @@ class Admin extends CI_Controller
                 $data = array(
                     'AWIEMP_NPK'        => $admin,
                     'ADMAPP_STATUS'     => 1,
-                    'ADMAPP_CREADATE'   => date('Y/m/d H:i:s'),
-                    'ADMAPP_CREABY'     => $this->session->userdata('npk'),
                     'ADMAPP_MODIDATE'   => date('Y/m/d H:i:s'),
                     'ADMAPP_MODIBY'     => $this->session->userdata('npk'),
                 );
-                $this->AdminM->saveAdmin($data);
+                $where = array(
+                    'AWIEMP_NPK'        => $admin,
+                );
+                if ($this->AdminM->isInactive($admin)) $this->AdminM->deleteAdmin($data, $where);
+                else {
+                    $newData = array(
+                        'ADMAPP_CREADATE'   => date('Y/m/d H:i:s'),
+                        'ADMAPP_CREABY'     => $this->session->userdata('npk'),
+                    );
+                    $data = array_merge($data, $newData);
+                    $this->AdminM->saveAdmin($data);
+                }
             }
         }
         redirect('Admin');

@@ -20,23 +20,11 @@ class Article extends CI_Controller
         $npk =  $this->session->userdata('npk');
         $data['forum']   = $this->ForumM->getForum();
         $data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-
         $data['notif']        = $this->TrainingM->getNotif($npk);
-        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
+        $data['getNotifRejectApproveFPET']   = $this->TrainingM->getNotifRejectApproveFPET($npk);
+        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']) + count($data['getNotifRejectApproveFPET']);
 
         $this->load->view('forum', $data);
-    }
-
-    public function viewFRM()
-    {
-        if (!$this->isAllowed()) return redirect(site_url());
-        $npk =  $this->session->userdata('npk');
-        $data['forum']   = $this->ForumM->getForum();
-        $data['notifMateri']   = $this->TrainingM->getNotifMateri($npk);
-        $data['notif']        = $this->TrainingM->getNotif($npk);
-        $data['totalNotif'] = count($data['notif']) + count($data['notifMateri']);
-
-        $this->load->view('viewForum', $data);
     }
 
     public function saveFRM()
@@ -167,18 +155,5 @@ class Article extends CI_Controller
     {
         $data["dataFRM"] = $this->ForumM->detailFRM($id);
         echo json_encode($data);
-    }
-    public function showDetail2($id)
-    {
-        $data["dataFRM"] = $this->ForumM->detailFRM($id);
-        echo json_encode($data);
-    }
-    public function removeNotif()
-    {
-        $id = $this->input->post('id');
-        $npk = $this->input->post('npk');
-        echo "<script>console.log('aa + $id' + $npk);</script>";
-        $this->TrainingM->removeNotif($id, $npk);
-        echo json_encode(['status' => 'success', 'message' => 'Notification removed successfully.']);
     }
 }

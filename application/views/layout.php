@@ -33,7 +33,7 @@ function isActive($url)
 	<div class="wrapper">
 		<div class="main-header">
 			<div class="logo-header">
-				<a href="index.html" class="logo">
+				<a href="<?php echo base_url('Training') ?>" class="logo">
 					Sistem Informasi Training
 				</a>
 				<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,9 +53,11 @@ function isActive($url)
 								<span class="notification" id="totalNotif"><?php echo $totalNotif; ?></span>
 							</a>
 							<ul class="dropdown-menu notif-box" aria-labelledby="navbarDropdown">
+							<?php if ($totalNotif == 0) {?>	
 								<li>
-									<div class="dropdown-title" id="totalNotifTitle">You have <?php echo $totalNotif == 0 ? 'no new' : $totalNotif ?> notifications</div>
+									<div class="dropdown-title" id="totalNotifTitle">Anda <?php echo $totalNotif == 0 ? 'tidak memiliki' : 'memiliki' . $totalNotif ?> notifikasi baru</div>
 								</li>
+								<?php } else { ?>
 								<li>
 									<div class="notif-center">
 										<?php foreach ($notif as $e) { ?>
@@ -67,6 +69,28 @@ function isActive($url)
 															<?php echo $e->judul; ?>
 														</span>
 														<span class="time"> Pengajuan <?php echo $e->npk; ?> ditolak</span><br>
+														<span class="time">(Tandai telah dibaca)</span>
+													</div>
+												</a>
+											</div>
+										<?php } ?>
+
+										<?php foreach ($getNotifRejectApproveFPET as $e) { ?>
+											<div class="notification-container" data-id="<?= $e->FPETFM_ID ?>">
+												<a href="javascript:void(0)" onclick="removeNotifFPET('<?= $e->FPETFM_ID ?>', <?php if ($e->FPETFM_APPROVED == 3) { ?> 1 <?php } else if ($e->FPETFM_HRAPPROVED == 3) { ?> 2 <?php } ?>, $('#totalNotif'));" class="time">
+													<div class="notif-icon notif-danger"> <i class="la la-trash"></i> </div>
+													<div class="notif-content">
+														<span class="block">
+															<?php echo $e->FPETFM_ID; ?>
+														</span>
+
+														<span class="time"> FPET dengan NPK
+															<?php if ($e->FPETFM_APPROVED == 3) { ?>
+																ditolak Atasan
+															<?php } else if ($e->FPETFM_HRAPPROVED == 3) { ?>
+																ditolak HR
+															<?php } ?>
+														</span><br>
 														<span class="time">(Tandai telah dibaca)</span>
 													</div>
 												</a>
@@ -90,6 +114,7 @@ function isActive($url)
 
 									</div>
 								</li>
+								<?php } ?>
 								<!-- <li>
 									<a class="see-all" href="javascript:void(0);"> <strong>See all notifications</strong> <i class="la la-angle-right"></i> </a>
 								</li> -->
@@ -116,54 +141,22 @@ function isActive($url)
 						</a>
 					</div>
 				</div>
-				<ul class="nav" style="border-bottom: 1px solid #eee;">
-					<?php if ($this->session->userdata('role') == 'admin') { ?>
+				<?php if ($this->session->userdata('role') == 'admin') { ?>
+					<ul class="nav my-2" style="border-bottom: 1px solid #eee;">
 						<li class="nav-item <?php echo isActive('Chart') ?>">
 							<a href="<?php echo base_url('Chart') ?>">
-								<i class="la la-user-secret"></i>
+								<i class="la la-bar-chart"></i>
 								<p>Dashboard</p>
 								<!-- <span class="badge badge-count">50</span> -->
 							</a>
 						</li>
-					<?php } ?>
-					<li class="nav-item <?php echo isActive('Training') ?>">
-						<a href="<?php echo base_url('Training') ?>">
-							<i class="la la-pencil-square"></i>
-							<p>Training</p>
-							<!-- <span class="badge badge-count">5</span> -->
-						</a>
-					</li>
-					<?php if ($this->session->userdata('role') == 'admin') { ?>
 						<li class="nav-item <?php echo isActive('Admin') ?>">
 							<a href="<?php echo base_url('Admin') ?>">
-								<i class="la la-user-secret"></i>
+								<i class="la la-archive"></i>
 								<p>Master Data</p>
 								<!-- <span class="badge badge-count">50</span> -->
 							</a>
 						</li>
-					<?php } ?>
-					<li class="nav-item <?php echo isActive('Personal/Index') ?>">
-						<a href="<?php echo base_url('Personal/Index') ?>">
-							<i class="la la-pencil-square"></i>
-							<p>Rangkuman Saya</p>
-							<!-- <span class="badge badge-count">5</span> -->
-						</a>
-					</li>
-					<li class="nav-item <?php echo isActive('FPET/index') ?>">
-						<a href="<?php echo base_url('FPET/index') ?>">
-							<i class="la la-user-secret"></i>
-							<p>FPET</p>
-							<!-- <span class="badge badge-count">50</span> -->
-						</a>
-					</li>
-					<li class="nav-item <?php echo isActive('FPET/approvalMenu') ?>">
-						<a href="<?php echo base_url('FPET/approvalMenu') ?>">
-							<i class="la la-pencil-square"></i>
-							<p>Approval FPET</p>
-							<!-- <span class="badge badge-count">5</span> -->
-						</a>
-					</li>
-					<?php if ($this->session->userdata('role') == 'admin') { ?>
 						<li class="nav-item <?php echo isActive('Question/index') ?>">
 							<a href="<?php echo base_url('Question/index') ?>">
 								<i class="la la-pencil-square"></i>
@@ -171,60 +164,61 @@ function isActive($url)
 								<!-- <span class="badge badge-count">5</span> -->
 							</a>
 						</li>
-						<!-- <li class="nav-item <?php echo isActive('TrainingOther') ?>">
-						<a href="<?php echo base_url('TrainingOther') ?>">
-							<i class="la la-pencil-square"></i>
-							<p>Training</p>
-						</a>
-					</li> -->
-
-						<!-- <li class="nav-item <?php echo isActive('Question/getPreExam') ?>">
-						<a href="<?php echo base_url('Question/getPreExam') ?>">
-							<i class="la la-pencil-square"></i>
-							<p>Pre/Post Test</p>
+					</ul>
+				<?php } ?>
+				<ul class="nav my-2" style="border-bottom: 1px solid #eee;">
+					<li class="nav-item <?php echo isActive('Personal/Index') ?>">
+						<a href="<?php echo base_url('Personal/Index') ?>">
+							<i class="la la-user"></i>
+							<p>Rangkuman Saya</p>
+							<!-- <span class="badge badge-count">5</span> -->
 						</a>
 					</li>
-					<li class="nav-item <?php echo isActive('Question/getPreExam') ?>">
-						<a href="<?php echo base_url('Question/getPreExam') ?>">
-							<i class="la la-pencil-square"></i>
-							<p>P Ujian</p>
+					<li class="nav-item <?php echo isActive('Training') ?>">
+						<a href="<?php echo base_url('Training') ?>">
+							<i class="la la-graduation-cap"></i>
+							<p>Training</p>
+							<!-- <span class="badge badge-count">5</span> -->
 						</a>
-					</li> -->
-						<li class="nav-item <?php echo isActive('Question/getGlobalScore') ?>">
+					</li>
+					<li class="nav-item <?php echo isActive('FPET') ?>">
+						<a href="<?php echo base_url('FPET') ?>">
+							<i class="la la-file-powerpoint-o"></i>
+							<p>Pengajuan Training</p>
+							<!-- <span class="badge badge-count">50</span> -->
+						</a>
+					</li>
+					<li class="nav-item <?php echo isActive('Personal/Resumes') ?>">
+						<a href="<?php echo base_url('Personal/Resumes') ?>">
+							<i class="la la-file-archive-o"></i>
+							<p>Evaluasi Training</p>
+						</a>
+					</li>
+					<?php if ($this->session->userdata('role') == 'admin') { ?>
+						<!-- <li class="nav-item <?php echo isActive('Question/getGlobalScore') ?>">
 							<a href="<?php echo base_url('Question/getGlobalScore') ?>">
 								<i class="la la-pencil-square"></i>
 								<p>Hasil Tes</p>
-
 							</a>
-						</li>
-						<li class="nav-item <?php echo isActive('Personal/Resumes') ?>">
-							<a href="<?php echo base_url('Personal/Resumes') ?>">
-								<i class="la la-gear"></i>
-								<p>Resume</p>
-							</a>
-						</li>
+						</li> -->
 					<?php } ?>
 					<li class="nav-item <?php echo isActive('Article') ?>">
 						<a href="<?php echo base_url('Article') ?>">
-							<i class="la la-gear"></i>
-							<p>Artikel</p>
+							<i class="la la la-commenting-o"></i>
+							<p>AWI Knowledge</p>
 						</a>
 					</li>
-					<!-- <li class="nav-item <?php echo isActive('Forum/viewFRM') ?>">
-							<a href="<?php echo base_url('Forum/viewFRM') ?>">
-								<i class="la la-gear"></i>
-								<p>Forum</p>
-							</a>
-						</li> -->
-					<?php if ($this->session->userdata('role') == 'admin') { ?>
+				</ul>
+				<?php if ($this->session->userdata('role') == 'admin') { ?>
+					<ul class="nav my-2" style="border-bottom: 1px solid #eee;">
 						<li class="nav-item <?php echo isActive('Setting') ?>">
 							<a href="<?php echo base_url('Setting') ?>">
-								<i class="la la-gear"></i>
+								<i class="la la-cogs"></i>
 								<p>Pengaturan</p>
 							</a>
 						</li>
-					<?php } ?>
-				</ul>
+					</ul>
+				<?php } ?>
 				<!-- <ul class="nav" style="margin-top: 5px;">
 					<li class="nav-item">
 						<a href="javascript:void(0)" onclick="confirmLogout()">
@@ -240,15 +234,14 @@ function isActive($url)
 			<div class="content">
 				<?php echo $contentPlaceHolder; ?>
 			</div>
-
-		</div>
-		<footer class="footer">
-			<div class="container-fluid">
-				<div class="copyright ml-auto ">
-					<i class="la la-copyright"></i> 2023 - IT <i class="la la-heart heart text-danger"></i> - PT. Akashi Wahana Indonesia. All Rights Reserved.
+			<footer class="footer" id="footer">
+				<div class="container-fluid">
+					<div class="copyright ml-auto ">
+						<i class="la la-copyright"></i> 2023 - IT <i class="la la-heart heart text-danger"></i> - PT. Akashi Wahana Indonesia. All Rights Reserved.
+					</div>
 				</div>
-			</div>
-		</footer>
+			</footer>
+		</div>
 	</div>
 	</div>
 </body>
@@ -274,6 +267,28 @@ function isActive($url)
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
 <script>
+	// function adjustHeight() {
+	// 	// Get the height of the window
+	// 	var windowHeight = window.innerHeight;
+
+	// 	// Get the height of the footer
+	// 	var footerHeight = document.getElementById('footer').offsetHeight;
+
+	// 	// Calculate the available height by subtracting the footer height
+	// 	var availableHeight = windowHeight - footerHeight;
+
+	// 	// Set the maximum height of the element
+	// 	document.getElementById('dynamicHeightElement').style.maxHeight = (availableHeight - 390) + 'px'; // Subtract 20px for padding or margins
+
+	// 	console.log(availableHeight - 400);
+	// }
+
+	// // Call the adjustHeight function initially
+	// adjustHeight();
+
+	// // Attach an event listener to adjust the height when the window is resized
+	// window.addEventListener('resize', adjustHeight);
+
 	function confirmLogout() {
 		Swal.fire({
 			title: 'Konfirmasi Logout',
@@ -342,25 +357,20 @@ function isActive($url)
 		}, 500);
 	}, 1000);
 
-	function removeNotification(npk, id, totalNotifElement) {
+	function removeNotification(url, data, id, totalNotifElement) {
 		$.ajax({
-			url: '<?= base_url('Training/removeNotif/') ?>',
+			url: url,
 			type: 'POST',
-			data: {
-				id: id,
-				npk: npk
-			},
+			data: data,
 			success: function() {
 				console.log(id + "sf");
-				$('.notification-container[data-id="' + npk + '"]').hide();
-
-				// Update totalNotif dynamically
+				$('.notification-container[data-id="' + id + '"]').hide();
 				totalNotifElement.text(function(i, text) {
-					// Extract the current totalNotif value
 					var currentTotalNotif = parseInt(text, 10);
-					// Decrease the totalNotif count
 					currentTotalNotif--;
-					// Return the updated text
+					if (currentTotalNotif == 0) {
+						disableExpandable();
+					}
 					return currentTotalNotif;
 				});
 			},
@@ -376,32 +386,28 @@ function isActive($url)
 	}
 
 	function removeNotifMateri(id, totalNotifElement) {
-		$.ajax({
-			url: '<?= base_url('Training/removeNotifMateri/') ?>' + id,
-			method: 'POST',
-			success: function() {
-				console.log(id + "sf");
-				$('.notification-container[data-id="' + id + '"]').hide();
+		removeNotification(
+			'<?= base_url('Training/removeNotifMateri/') ?>' + id,
+			'POST',
+			id,
+			totalNotifElement
+		);
+	}
 
-				// Update totalNotif dynamically
-				totalNotifElement.text(function(i, text) {
-					// Extract the current totalNotif value
-					var currentTotalNotif = parseInt(text, 10);
-					// Decrease the totalNotif count
-					currentTotalNotif--;
-					// Return the updated text
-					return currentTotalNotif;
-				});
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-				console.error('AJAX Error:', textStatus, errorThrown);
-				if (jqXHR.status === 404) {
-					alert('Notification not found.');
-				} else {
-					alert('Failed to remove notification. Please try again.');
-				}
-			}
-		});
+	function removeNotifFPET(id, code, totalNotifElement) {
+		removeNotification(
+			'<?= base_url('Training/removeNotifFPET/') ?>' + id + '/' + code,
+			'POST',
+			id,
+			totalNotifElement
+		);
+	}
+
+	function disableExpandable() {
+		$('#notifExpandable')
+			.addClass('disabled')
+			.removeAttr('data-toggle')
+			.attr('aria-expanded', 'false');
 	}
 
 	function updateDateTime() {

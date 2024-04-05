@@ -57,7 +57,7 @@ ob_start();
 		</div>
 	</div>
 </div>
-<?php include __DIR__ . '/script2.php'; ?>
+<?php include __DIR__ . '/script.php'; ?>
 <?php
 /* Store the content of the buffer for later use */
 $contentPlaceHolder = ob_get_contents();

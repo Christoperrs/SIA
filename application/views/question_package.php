@@ -31,39 +31,35 @@ ob_start();
 					if (empty($package)) {
 					?>
 						<div class="avatar flex-shrink-0 me-3 justify-content-center d-flex">
-
 							<img src="<?= base_url('assets/img/dataEmpty1.jpg') ?>" alt="User" class="img-fluid" style="max-width: 310px; max-height: 190px;" />
-
 						</div>
 						<hr>
 						<h5 style="text-align: center;">Data Tidak Ada</h5>
 					<?php
 					} else { ?>
+						<div class="form-inline py-2">
+							<label class="col-md-1 p-0">Search:&nbsp;&nbsp;</label>
+							<div class="col-md-11 p-0">
+								<input type="text" class="form-control input-full" onkeyup="searchPackage()" id="searchPackage" name="searchPackage">
+							</div>
+						</div>
 						<table id="allPackageTable" name="table" class="table table-hover table-head-bg-info my-2">
 							<thead>
 								<tr>
 									<th scope="col" style="width: 50px;">No.</th>
-									<th scope="col">Id Paket Soal</th>
+									<th scope="col">ID Paket Soal</th>
 									<th scope="col">Paket Soal</th>
 									<th scope="col" style="width: 95px;">Nama Training</th>
-									<th scope="col" style="width: 135px;" class="text-center">Aksi</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="tBodymainTable">
 								<?php $i = 1;
 								foreach ($package as $e) { ?>
-									<tr>
-
+									<tr onclick="showPForm(<?php echo $e->TRNPCK_ID; ?>)">
 										<td><?php echo $i; ?></td>
 										<td><?php echo $e->TRNPCK_UNIQUEID; ?></td>
 										<td><?php echo $e->TRNPCK_NAME; ?></td>
 										<td><?php echo $e->TRNHDR_TITLE; ?></td>
-										<td>
-											<div class="d-flex justify-content-center">
-												<a href="javascript:void(0)" id="editBtn" onclick="showPForm(<?php echo $e->TRNPCK_ID; ?>)" class="btn btn-warning mr-2"><i class="la la-pencil" style="font-size: 16px;"></i></a>
-												<a href="javascript:void(0)" id="deleteBtn" onclick="deletePackage(<?php echo $e->TRNPCK_ID; ?>)" class="btn btn-danger"><i class="la la-trash" style="font-size: 16px;"></i></a>
-											</div>
-										</td>
 									</tr>
 								<?php $i++;
 								} ?>
@@ -74,7 +70,6 @@ ob_start();
 			</div>
 		</div>
 	</div>
-
 	<div class="row" id="modifyPackagePage" style="display: none;">
 		<div class="loader-container" id="loaderDiv">
 			<div class="loader">
@@ -89,6 +84,12 @@ ob_start();
 						<div class="col">
 							<h4 class="card-title" id="titlePackage">Tambah Paket Soal</h4>
 							<p class="card-category" id="navPackage">Paket Soal / Tambah Paket Soal</p>
+						</div>
+						<div class="col" id="btnDetailPackage">
+							<div class="d-flex justify-content-end">
+								<a href="javascript:void(0)" id="editBtnPackage" class="btn btn-warning mr-2"><i class="la la-pencil" style="font-size: 16px;"></i></a>
+								<a href="javascript:void(0)" id="deleteBtn" onclick="deletePackage(<?php echo $e->TRNPCK_ID; ?>)" class="btn btn-danger"><i class="la la-trash" style="font-size: 16px;"></i></a>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -130,7 +131,7 @@ ob_start();
 							<div class="col-md-1">
 								<div class="form-group p-0">
 									<label for="chooseTrain"><span style="color: white;">*</span></label>
-									<button type="button" class="btn btn-primary float-right" onclick="generateQuestionRows()">Generate</button>
+									<button type="button" id="generatePackage" class="btn btn-primary float-right" onclick="generateQuestionRows()">Generate</button>
 								</div>
 							</div>
 						</div>
@@ -141,12 +142,12 @@ ob_start();
 										<tr>
 											<th scope="col" style="width: 50px;">No.</th>
 											<th scope="col">Pertanyaan</th>
-											<th scope="col" style="width: 130px;">Kesulitan</th>
-											<th scope="col" style="width: 85px;">Jawaban</th>
 											<th scope="col" style="width: 150px;">Pilihan A</th>
 											<th scope="col" style="width: 150px;">Pilihan B</th>
 											<th scope="col" style="width: 150px;">Pilihan C</th>
 											<th scope="col" style="width: 150px;">Pilihan D</th>
+											<th scope="col" style="width: 85px;">Jawaban</th>
+											<th scope="col" style="width: 130px;">Kesulitan</th>
 										</tr>
 									</thead>
 									<tbody id="tBodyAllSoal">
@@ -157,7 +158,7 @@ ob_start();
 					</div>
 					<div class="card-body">
 						<input type="hidden" name="package_id" id="package_id">
-						<button type="button" class="btn btn-success float-right" onclick="validatePForm()">Submit</button>
+						<button type="button" id="submitPackage" class="btn btn-success float-right" onclick="validatePForm()">Submit</button>
 						<a href="javascript:void(0)" onclick="changePForm('main')" class="btn btn-danger"> Kembali</a>
 					</div>
 				</form>
@@ -172,5 +173,5 @@ $contentPlaceHolder = ob_get_contents();
 ob_end_clean();
 /* Call the master page. It will echo the content of the placeholders in the designated locations */
 include __DIR__ . "/layout.php";
-include __DIR__ . "/script2.php";
+include __DIR__ . "/script.php";
 ?>

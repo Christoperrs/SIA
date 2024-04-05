@@ -2159,7 +2159,7 @@ body {
   top: auto;
   height: 100%;
   left: 15px;
-  opacity: 1;
+  opacity: 0;
 }
 .main-header .logo-header .navbar-toggler .navbar-toggler-icon {
   background: url(../img/menu2.png);
@@ -2351,6 +2351,10 @@ body {
   border-top: 1px solid #eee;
   padding: 15px;
   background: #ffffff;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
 }
 .footer .container-fluid {
   display: flex;
@@ -5277,6 +5281,10 @@ body {
   opacity: 1;
 }
 
+.card-flip {
+  transition: filter 0.3s ease;
+}
+
 .card-default, .card-primary, .card-info, .card-success, .card-warning, .card-danger {
   color: #ffffff;
   border: 0px;
@@ -7121,4 +7129,19 @@ body {
   /* 16:10 aspect ratio (10/16 * 100) */
   background-size: cover;
   background-position: center;
+}
+
+.card-flip:hover {
+  filter: brightness(80%);
+  cursor: pointer;
+}
+
+@media (max-width: 576px) {
+  .mobile-image {
+    display: none;
+  }
+
+    .card .card-header.remove-border-bottom {
+    border-bottom: none !important;
+  }
 }

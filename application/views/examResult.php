@@ -32,7 +32,7 @@ function isActive($url)
     <div class="wrapper">
         <div class="main-header">
             <div class="logo-header">
-                <a href="index.html" class="logo">
+                <a href="<?php echo base_url('Training') ?>" class="logo">
                     Sistem Informasi Training
                 </a>
                 <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
@@ -158,7 +158,7 @@ function isActive($url)
                 </div>
             </div>
 
-            <?php include __DIR__ . '/script2.php'; ?>
+            <?php include __DIR__ . '/script.php'; ?>
             <?php
 
             ?>
@@ -345,16 +345,16 @@ function isActive($url)
     });
 
     function callLoader() {
-		var loader = document.getElementById('loaderDiv');
-		setTimeout(function() {
-			loader.classList.add('fade-out');
-			setTimeout(function() {
-				loader.style.display = 'none';
-			}, 500);
-		}, 500);
-		loader.style.display = '';
-		loader.classList.remove('fade-out');
-	}
+        var loader = document.getElementById('loaderDiv');
+        setTimeout(function() {
+            loader.classList.add('fade-out');
+            setTimeout(function() {
+                loader.style.display = 'none';
+            }, 500);
+        }, 500);
+        loader.style.display = '';
+        loader.classList.remove('fade-out');
+    }
 
     function backExam() {
         Swal.fire({

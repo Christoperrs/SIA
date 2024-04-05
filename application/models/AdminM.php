@@ -36,6 +36,17 @@ class AdminM extends CI_Model
         return $query->num_rows() > 0;
     }
 
+    public function isInactive($npk)
+    {
+        $query = $this->db->query(
+            "   SELECT  TOP 1 1
+                FROM    KMS_ADMIN
+                WHERE   AWIEMP_NPK      = '$npk'
+                AND     ADMAPP_STATUS   = 0     "
+        );
+        return $query->num_rows() > 0;
+    }
+
     public function getAdmins()
     {
         $query = $this->db->query(

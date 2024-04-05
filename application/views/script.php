@@ -11,7 +11,45 @@
 	var trStat = 0;
 
 	truncateTextIfNeeded();
-	window.addEventListener('resize', truncateTextIfNeeded);
+	window.addEventListener('resize', function() {
+		truncateTextIfNeeded();
+		// Calculate the aspect ratio of the screen
+		var screenWidth = window.innerWidth;
+		var screenHeight = window.innerHeight;
+		var aspectRatio = screenWidth / screenHeight;
+		var maxHeight = 0;
+		var cond = 0;
+
+		if (screenWidth < 400 && screenHeight < 700) {
+			// Mobile devices in portrait mode
+			maxHeight = screenHeight * 0.356; // Adjust the factor as needed
+			cond = 0;
+		} else if (screenWidth < 600 && screenHeight < 700) {
+			// Mobile devices in portrait mode
+			maxHeight = screenHeight * 0.356; // Adjust the factor as needed
+			cond = 8;
+		} else if (screenWidth < 576 && screenHeight < 992) {
+			// Mobile devices in portrait mode
+			maxHeight = screenHeight * 0.5; // Adjust the factor as needed
+			cond = 1;
+		} else if (screenWidth < 992 && screenHeight < 992 && screenWidth > screenHeight) {
+			// Mobile devices in landscape mode
+			maxHeight = screenHeight * 0.5;
+			cond = 2;
+		} else if (screenWidth > screenHeight) {
+			// Web landscape mode
+			maxHeight = screenHeight * 0.35;
+			cond = 3;
+		} else {
+			// Default scenario
+			maxHeight = screenHeight * 0.6;
+			cond = 4;
+		}
+
+		// Set the max-height of the element
+		document.getElementById('dyDiv').style.maxHeight = maxHeight + 'px';
+		console.log(screenWidth, screenHeight, aspectRatio, maxHeight, cond);
+	});
 
 	function truncateTextIfNeeded() {
 		const pElement = document.getElementById('username');
@@ -842,25 +880,25 @@
 					} else {
 						isDataTableExist(rowCountMateriForm, 'x', 3, 'emptyData', 'tBodySubstanceTableDetail');
 					}
+					if (rowCountMateriForm != 0) {
+						data.substance.forEach(function(substance) {
+							var tableBody = document.getElementById('tBodySubstanceTableDetail');
+							var row = document.createElement('tr');
+							createTextCell(counterSub, row, 'number', 'center');
+							createTextCell(substance.TRNSUB_TITLE, row, 'text', 'left');
+							createFileCell(id, substance.TRNSUB_ID, substance.TRNSUB_PATH, substance.TRNSUB_STATUS == 2 ? '' : 'detail', row);
+							if (substance.TRNSUB_STATUS == 2) {
+								createBadgeApproval(substance.TRNSUB_ID, '', '', row);
+							}
+							counterSub++;
+							tableBody.appendChild(row);
+						});
+					}
 					if (data.header[0].TRNHDR_CATEGORY == "Elearning") {
-						if (rowCountMateriForm != 0) {
-							data.substance.forEach(function(substance) {
-								var tableBody = document.getElementById('tBodySubstanceTableDetail');
-								var row = document.createElement('tr');
-								createTextCell(counterSub, row, 'number', 'center');
-								createTextCell(substance.TRNSUB_TITLE, row, 'text', 'left');
-								createFileCell(id, substance.TRNSUB_ID, substance.TRNSUB_PATH, substance.TRNSUB_STATUS == 2 ? '' : 'detail', row);
-								if (substance.TRNSUB_STATUS == 2) {
-									createBadgeApproval(substance.TRNSUB_ID, '', '', row);
-								}
-								counterSub++;
-								tableBody.appendChild(row);
-							});
-						}
 						document.getElementById('tagsPre').style.display = 'inline';
 						document.getElementById('tagsPost').style.display = 'inline';
 					} else {
-						document.getElementById('substanceDiv').style.display = 'none';
+						// document.getElementById('substanceDiv').style.display = 'none';
 						document.getElementById('examDiv').style.display = 'none';
 						document.getElementById('tagsPre').style.display = 'none';
 						document.getElementById('tagsPost').style.display = 'none';
@@ -996,9 +1034,9 @@
 		trainings.forEach((t, index) => {
 			const cardHTML = `
 				<div class="col-sm-3 card-item ${counter <= 4 ? 'fade-in' : 'fade-out hide-after-fade-out'}">
-					<div class="card" style="border-radius: 20px;">
-						<div class="card-header">
-							<img src="assets/img/picLog.png" style="width: 100%">
+					<div class="card card-flip" onclick="showDetail(${t.TRNHDR_ID})" style="border-radius: 20px;">
+						<div class="card-header remove-border-bottom">
+							<img src="assets/img/picLog.png" class="img-fluid mobile-image" style="width: 100%">
 							<div class="row overlay-content" style="width: 100%">
 								<div class="col-sm-6">
 								${t.TRNHDR_STATUS === 2 ? `
@@ -1015,15 +1053,10 @@
 						</div>
 						<div class="card-body">
 							<div class="row">
-								<div class="col-sm-8 pr-0">
-									<h4 class="card-title">${t.TRNHDR_TITLE.length > 15 ? t.TRNHDR_TITLE.substring(0, 15) + '...' : t.TRNHDR_TITLE}</h4>
+								<div class="col">
+									<h4 class="card-title forum-class">${t.TRNHDR_TITLE}</h4>
 									<p class="card-category">${t.detail_count} materi</p>
 									<p class="card-category">${t.participant_count} partisipan</p>
-								</div>
-								<div class="col d-flex align-items-center justify-content-end p-0 pr-3">
-									<a href="javascript:void(0)" onclick="showDetail(${t.TRNHDR_ID})" class="btn btn-primary px-2">
-										<i class="la la-bars" style="font-size: 16px;"></i> Detail
-									</a>
 								</div>
 							</div>
 						</div>
@@ -1283,7 +1316,8 @@
 		if (code == 'clear') tags = [];
 		data.forEach(function(tag) {
 			var col = isColorLight(tag.TRNLBL_COLOR);
-			const quer = trStat == 2 ? '' : `onclick="addTags('tags${tag.TRNLBL_ID}')"`;
+			// trStat == 2 ? '' :
+			const quer = `onclick="addTags('tags${tag.TRNLBL_ID}')"`;
 			const cardHTML = `
 				<span class="badge tags" id="tags${tag.TRNLBL_ID}" style="background-color: ${tag.TRNLBL_COLOR}; color: ${col}; border-color: white;" ` + quer + `
 				onmouseover="mouseIn('tags${tag.TRNLBL_ID}', '${tag.TRNLBL_COLOR}')" onmouseout="mouseOut('tags${tag.TRNLBL_ID}', '${tag.TRNLBL_COLOR}')">${tag.TRNLBL_NAME}</span>
@@ -1387,12 +1421,11 @@
 			}
 		});
 
-		if (trStat != 2) {
-			populateTagsSection(<?php echo json_encode($tags) ?>, 'edit');
-			tags.forEach(function(tag) {
-				document.getElementById('tags' + tag).style.borderColor = 'blue';
-			});
-		}
+
+		populateTagsSection(<?php echo json_encode($tags) ?>, 'edit');
+		tags.forEach(function(tag) {
+			document.getElementById('tags' + tag).style.borderColor = 'blue';
+		});
 	}
 
 	async function checkAccess(part, file) {
@@ -1466,8 +1499,8 @@
 					document.getElementById('chooseTrain').value = package['TRNHDR_ID'];
 					document.getElementById('package_id').value = package['TRNPCK_ID'];
 					document.getElementById('decider').value = questions.length;
+					valuesArray = [];
 					createTableQuestion(questions.length);
-
 					for (var i = 0; i < questions.length; i++) {
 						fields.forEach(function(field) {
 							var elementId = field.id + (i + 1);
@@ -1480,6 +1513,7 @@
 
 								if (propertyName) {
 									element.value = questions[i][propertyName];
+									element.setAttribute('readonly', true);
 									(function() {
 										if (element) {
 											element.oninput = function() {
@@ -1490,9 +1524,11 @@
 								}
 							}
 						});
-
-						document.getElementById('TRNQUE_ID' + (i + 1)).value = questions[i]['question_id'];
+						document.getElementById('TRNQUE_ID' + (i + 1)).value = questions[i]['TRNQUE_ID'];
 					}
+					editBtnPackage.onclick = function() {
+						doEditPackage(questions.length);
+					};
 				})
 				.catch(error => {
 					console.error('Error:', error);
@@ -1645,6 +1681,37 @@
 			});
 	}
 
+	function doEditPackage(max) {
+		header.forEach(function(field) {
+			var element = document.getElementById(field);
+			element.removeAttribute('readonly');
+			element.oninput = function() {
+				removeStyle(element);
+			};
+		});
+
+		document.getElementById("generatePackage").disabled = false;
+		document.getElementById("generatePackage").disabled = false;
+		document.getElementById("submitPackage").style.display = "block";
+		document.getElementById("btnDetailPackage").style.display = "none";
+		generateQuestionRows();
+		var max = document.getElementById('decider').value;
+
+		fields.forEach(function(field) {
+			for (var i = 1; i <= max; i++) {
+				var elementId = field.id + i;
+				var element = document.getElementById(elementId);
+
+				if (element && !valuesArray.some(entry => entry.id === elementId)) {
+					valuesArray.push({
+						id: elementId,
+						value: element.value
+					});
+				}
+			}
+		});
+
+	}
 
 	function callLoader() {
 		var loader = document.getElementById('loaderDiv');
@@ -1827,6 +1894,8 @@
 				element.value = entry.value;
 			}
 		});
+
+		console.log(valuesArray);
 	}
 
 	document.getElementById('decider').addEventListener('input', function(event) {

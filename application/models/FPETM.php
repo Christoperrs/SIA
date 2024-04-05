@@ -26,12 +26,22 @@ class FPETM extends CI_Model
     public function getApprovedFpet($npk)
     {
         $query = $this->db->query(
-            "   SELECT  * 
+            "   SELECT  *,
+                    CASE 
+                        WHEN FPETFM_HRAPPROVER = $npk THEN 'HR'
+                        WHEN FPETFM_APPROVER = $npk THEN 'BOSS'
+                        WHEN FPETFM_CREABY = $npk THEN 'EVAL'
+                        ELSE 'Unknown'
+                    END AS role
                 FROM    KMS_FPETFM
-                WHERE   FPETFM_STATUS = 1
-                AND     (   FPETFM_HRAPPROVER   = $npk
-                            OR FPETFM_APPROVER  = $npk  )"
-        );
+                WHERE   FPETFM_STATUS > 0
+                AND     (   
+                            FPETFM_HRAPPROVER = $npk
+                            OR FPETFM_APPROVER = $npk  
+                            OR FPETFM_CREABY = $npk  
+                        )
+                ORDER BY    FPETFM_STATUS, FPETFM_APPROVED, FPETFM_HRAPPROVED"
+                        );
         return $query->result();
     }
     public function detailFpet($id)
@@ -43,24 +53,11 @@ class FPETM extends CI_Model
         );
         return $query->row();
     }
-    public function removeFpet($id)
+
+    public function confirmPublishDeleteFPET($code, $id)
     {
         $data = array(
-            'FPETFM_STATUS'     => 0,
-            'FPETFM_MODIBY'     => $this->session->userdata('npk'),
-            'FPETFM_MODIDATE'   => date('Y/m/d H:i:s'),
-        );
-        $where = array(
-            'FPETFM_ID' => $id
-        );
-
-        return $this->db->update($this->t_fpet, $data, $where);
-    }
-
-    public function publishFpet($id)
-    {
-        $data = array(
-            'FPETFM_STATUS'     => 1,
+            'FPETFM_STATUS'     => $code,
             'FPETFM_MODIBY'     => $this->session->userdata('npk'),
             'FPETFM_MODIDATE'   => date('Y/m/d H:i:s'),
         );
@@ -103,9 +100,39 @@ class FPETM extends CI_Model
         return $this->db->update($this->t_fpet, $data, $where);
     }
 
-    public function addParticipantTraining($data)
+    public function addParticipantTraining($participant, $idTrain)
     {
-        return $this->db->insert('KMS_TRNACC', $data);
+        $query = $this->db->query(
+            "   SELECT  *
+                FROM    KMS_TRNACC
+                WHERE   TRNHDR_ID   = $idTrain
+                AND     AWIEMP_NPK  = '$participant'  "
+        );
+        $row = $query->row();
+
+        if ($row && $row->TRNACC_PERMISSION == 0) {
+            $data = array(
+                'TRNACC_PERMISSION' => 1,
+                'TRNACC_MODIBY'     => $this->session->userdata('npk'),
+                'TRNACC_MODIDATE'   => date('Y/m/d H:i:s'),
+            );
+            $where = array(
+                'TRNHDR_ID'     => $idTrain,
+                'AWIEMP_NPK'    => $participant
+            );
+            return $this->db->update('KMS_TRNACC', $data, $where);
+        } else {
+            $data = array(
+                'TRNACC_PERMISSION' => 1,
+                'TRNACC_MODIBY'     => $this->session->userdata('npk'),
+                'TRNACC_MODIDATE'   => date('Y/m/d H:i:s'),
+                'TRNACC_CREABY'     => $this->session->userdata('npk'),
+                'TRNACC_CREADATE'   => date('Y/m/d H:i:s'),
+                'TRNHDR_ID'         => $idTrain,
+                'AWIEMP_NPK'        => $participant,
+            );
+            return $this->db->insert('KMS_TRNACC', $data);
+        }
     }
 
     public function modifyFpet($data, $id)
@@ -119,12 +146,13 @@ class FPETM extends CI_Model
     public function checkParticipant($participant, $idTrain)
     {
         $query = $this->db->query(
-            "   SELECT  count (*) AS record_count
+            "   SELECT  count(*) AS REC
                 FROM    KMS_TRNACC
-                WHERE   TRNHDR_ID   = $idTrain
-                AND     AWIEMP_NPK  = '$participant'  "
+                WHERE   TRNHDR_ID           = $idTrain
+                AND     AWIEMP_NPK          = '$participant'
+                AND     TRNACC_PERMISSION   = 1             "
         );
-        return $query->row()->record_count > 0;
+        return $query->row()->REC > 0;
     }
 
     public function getOverview($npk, $idHeader)

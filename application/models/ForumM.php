@@ -4,10 +4,11 @@ class ForumM extends CI_Model
 {
     public function getForum()
     {
+        $and = $this->isAdmin() ? '0' : "1 OR FRM_CREABY = '" . $this->session->userdata('npk') . "'";
         $query = $this->db->query(
             "   SELECT  *
                 FROM    KMS_FRM
-                WHERE   FRM_STATUS >= 1 
+                WHERE   FRM_STATUS > " . $and . "
                 ORDER BY    FRM_STATUS DESC, FRM_TITLE"
         );
         return $query->result();

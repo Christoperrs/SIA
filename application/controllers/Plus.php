@@ -21,13 +21,7 @@ class Plus extends CI_Controller {
 
     public function searchEmployee()
 	{
-        // $name   = $this->input->post('search_employee');
-		// $dept   = $this->input->post('code');
-		// if ($code == 'name')
         $filteredData['employees']     = $this->OracleDBM->getEmployeeByKeyword();
-        // else if ($code == 'dept') $filteredData['employees']= $this->OracleDBM->getEmpByNPK('NM_SIE', $keyword);
-		// else $filteredData['employees']                     = $this->OracleDBM->getAllEmp();
-        // return $filteredData;
         header('Content-Type: application/json');
         echo json_encode($filteredData);
 	}
@@ -36,7 +30,7 @@ class Plus extends CI_Controller {
 		$isAll	= filter_var($this->input->post('isAll'), FILTER_VALIDATE_BOOLEAN);
 		$key	= $this->input->post('keyword');
         $tag	= $this->input->post('tag');
-		echo json_encode($this->TrainingM->searchTraining($isAll, $key, $tag));
+		echo json_encode($this->TrainingM->searchTraining($this->TrainingM->isAdmin() ? $isAll : false, $key, $tag));
 	}
 
     public function filterTraining() {
